@@ -1,0 +1,33 @@
+\section{Model}
+
+\begin{frame}{Model Overview}
+  \begin{center}
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[node distance=1.5cm, every node/.style={font=\small}]
+      \node[draw, rounded corners, minimum width=2.8cm, minimum height=0.9cm] (input) {Telemetry window};
+      \node[draw, rounded corners, right=of input, minimum width=2.5cm, minimum height=0.9cm] (enc) {Encoder};
+      \node[draw, rounded corners, right=of enc, minimum width=3cm, minimum height=0.9cm] (loop) {Looped latent core};
+      \node[draw, rounded corners, right=of loop, minimum width=2.8cm, minimum height=0.9cm] (head) {Prediction heads};
+      \draw[-{Latex}] (input) -- (enc);
+      \draw[-{Latex}] (enc) -- (loop);
+      \draw[-{Latex}] (loop) -- (head);
+      \draw[-{Latex}, bend left=35] (loop.north) to node[above]{exit gate} (loop.north east);
+    \end{tikzpicture}
+    }%
+  \end{center}
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item Shared recurrent block refines a latent state for up to $K$ steps.
+    \item Learned exit gate stops early on easy examples.
+    \item Final heads predict health class, severity, and action.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Training Configuration}
+  \begin{itemize}
+    \item Baseline: direct classifier on flattened or pooled window features.
+    \item Fixed-depth loop: always run $K$ latent refinement steps.
+    \item Adaptive loop: stop when exit confidence exceeds threshold.
+    \item Encoder options: MLP, GRU, or 1D CNN.
+  \end{itemize}
+\end{frame}

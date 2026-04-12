@@ -1,0 +1,22 @@
+\section{Datasets}
+
+\begin{frame}{Primary and Secondary Datasets}
+  \begin{itemize}
+    \item Primary benchmark: \texttt{CMAPSSData/} for supervised RUL-style predictive maintenance.
+    \item Secondary benchmark: \texttt{IMS/} for bearing degradation and fault progression.
+    \item Optional extension: Kaggle bearing dataset for additional fault-class coverage.
+    \item Optional extension: NASA anomaly detection dataset for transfer and generalization checks.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Dataset Comparison}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}p{5cm}}
+    \toprule
+    Dataset & Strength & Use in this project \\
+    \midrule
+    CMAPSS & Standard supervised benchmark with RUL-style labels & Main experiment and report backbone \\
+    IMS & Run-to-failure vibration data with implicit fault progression & Secondary validation and anomaly analysis \\
+    Kaggle bearing set & Simple bearing fault patterns & Fast supplemental benchmark \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

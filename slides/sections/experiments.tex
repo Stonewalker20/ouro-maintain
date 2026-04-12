@@ -1,0 +1,19 @@
+\section{Experiments}
+
+\begin{frame}{Experimental Questions}
+  \begin{enumerate}
+    \item Does adaptive depth improve predictive-maintenance performance over fixed-depth baselines?
+    \item Do hard windows use more loop steps than easy windows?
+    \item Can adaptive looping match stronger baselines at similar latency?
+    \item Does early exit reduce average compute without hurting critical-failure recall?
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Evaluation Plan}
+  \begin{itemize}
+    \item Classification: accuracy, macro F1, weighted F1, AUROC.
+    \item Maintenance utility: critical-failure recall, confusion matrix, action accuracy.
+    \item Compute: average loop depth, max depth, approximate latency.
+    \item Ablations: max depth, exit policy, encoder choice, single-task versus multi-task heads.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,49 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\pdfstringdefDisableCommands{%
+  \def\translate#1{#1}%
+}
+
+\title{OuroMaintain}
+\subtitle{Adaptive Looped Reasoning for Predictive Maintenance}
+\author{Cordell Stonecipher}
+\institute{LoopedLM}
+\date{\today}
+
+\newcommand{\placeholder}[1]{\textit{#1}}
+
+\begin{document}
+
+\input{sections/title}
+\input{sections/outline}
+\input{sections/motivation}
+\input{sections/datasets}
+\input{sections/model}
+\input{sections/experiments}
+\input{sections/results}
+\input{sections/demo}
+\input{sections/limitations}
+\input{sections/next-steps}
+\input{sections/closing}
+
+\appendix
+\input{sections/references}
+
+\end{document}
