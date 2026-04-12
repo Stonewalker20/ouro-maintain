@@ -1,0 +1,198 @@
+from __future__ import annotations
+
+import argparse
+import random
+
+import numpy as np
+import torch
+from sklearn.metrics import accuracy_score, classification_report, f1_score
+from torch import nn
+from torch.utils.data import DataLoader, Subset
+
+from .config import DataConfig, ModelConfig, TrainConfig
+from .data import TelemetryWindowDataset, build_windows, load_cmapss_subset, load_telemetry_csv
+from .models import AdaptiveLoopModel, BaselineClassifier, FixedDepthLoopModel
+
+
+def set_seed(seed: int) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+
+def split_indices(size: int, val_ratio: float, seed: int) -> tuple[np.ndarray, np.ndarray]:
+    indices = np.arange(size)
+    rng = np.random.default_rng(seed)
+    rng.shuffle(indices)
+    split = int(size * (1 - val_ratio))
+    return indices[:split], indices[split:]
+
+
+def build_model(name: str, config: ModelConfig) -> nn.Module:
+    if name == "baseline":
+        return BaselineClassifier(config)
+    if name == "fixed":
+        return FixedDepthLoopModel(config)
+    if name == "adaptive":
+        return AdaptiveLoopModel(config)
+    raise ValueError(f"Unsupported model: {name}")
+
+
+def run_epoch(
+    model: nn.Module,
+    loader: DataLoader,
+    criterion: nn.Module,
+    optimizer: torch.optim.Optimizer | None,
+    device: torch.device,
+) -> tuple[float, np.ndarray, np.ndarray, list[np.ndarray]]:
+    is_train = optimizer is not None
+    model.train(is_train)
+
+    total_loss = 0.0
+    all_preds: list[np.ndarray] = []
+    all_targets: list[np.ndarray] = []
+    step_traces: list[np.ndarray] = []
+
+    for features, labels in loader:
+        features = features.to(device)
+        labels = labels.to(device)
+
+        outputs = model(features)
+        logits = outputs["logits"]
+        loss = criterion(logits, labels)
+
+        if is_train:
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+        total_loss += loss.item() * labels.size(0)
+        preds = logits.argmax(dim=-1)
+        all_preds.append(preds.detach().cpu().numpy())
+        all_targets.append(labels.detach().cpu().numpy())
+
+        if "steps" in outputs:
+            step_traces.append(outputs["steps"].detach().cpu().numpy())
+
+    mean_loss = total_loss / len(loader.dataset)
+    return (
+        mean_loss,
+        np.concatenate(all_preds),
+        np.concatenate(all_targets),
+        step_traces,
+    )
+
+
+def summarize_metrics(preds: np.ndarray, targets: np.ndarray) -> dict[str, float]:
+    return {
+        "accuracy": accuracy_score(targets, preds),
+        "macro_f1": f1_score(targets, preds, average="macro"),
+        "weighted_f1": f1_score(targets, preds, average="weighted"),
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Train predictive-maintenance models.")
+    parser.add_argument(
+        "--dataset",
+        choices=["csv", "cmapss"],
+        default="cmapss",
+        help="Dataset loader to use.",
+    )
+    parser.add_argument("--data-path", help="CSV file with telemetry rows.")
+    parser.add_argument(
+        "--cmapss-root",
+        default="CMAPSSData",
+        help="Directory containing CMAPSS train/test files.",
+    )
+    parser.add_argument(
+        "--cmapss-subset",
+        default="FD001",
+        choices=["FD001", "FD002", "FD003", "FD004"],
+        help="CMAPSS subset to train on.",
+    )
+    parser.add_argument(
+        "--model",
+        choices=["baseline", "fixed", "adaptive"],
+        default="adaptive",
+        help="Model family to train.",
+    )
+    parser.add_argument("--window-size", type=int, default=32)
+    parser.add_argument("--stride", type=int, default=8)
+    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--hidden-dim", type=int, default=128)
+    parser.add_argument("--max-loops", type=int, default=6)
+    parser.add_argument("--exit-threshold", type=float, default=0.8)
+    parser.add_argument("--warning-rul", type=int, default=50)
+    parser.add_argument("--critical-rul", type=int, default=15)
+    args = parser.parse_args()
+
+    data_config = DataConfig(
+        window_size=args.window_size,
+        stride=args.stride,
+        warning_rul=args.warning_rul,
+        critical_rul=args.critical_rul,
+    )
+    train_config = TrainConfig(batch_size=args.batch_size, epochs=args.epochs)
+    set_seed(train_config.seed)
+
+    if args.dataset == "csv":
+        if not args.data_path:
+            raise ValueError("--data-path is required when --dataset csv is used.")
+        df = load_telemetry_csv(args.data_path, data_config)
+    else:
+        df = load_cmapss_subset(args.cmapss_root, args.cmapss_subset, data_config)
+
+    windowed = build_windows(df, data_config)
+    dataset = TelemetryWindowDataset(windowed)
+
+    train_idx, val_idx = split_indices(len(dataset), train_config.val_ratio, train_config.seed)
+    train_loader = DataLoader(Subset(dataset, train_idx), batch_size=train_config.batch_size, shuffle=True)
+    val_loader = DataLoader(Subset(dataset, val_idx), batch_size=train_config.batch_size, shuffle=False)
+
+    input_dim = dataset.features.shape[-1]
+    model_config = ModelConfig(
+        input_dim=input_dim,
+        hidden_dim=args.hidden_dim,
+        max_loops=args.max_loops,
+        exit_threshold=args.exit_threshold,
+    )
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = build_model(args.model, model_config).to(device)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=train_config.learning_rate,
+        weight_decay=train_config.weight_decay,
+    )
+
+    for epoch in range(1, train_config.epochs + 1):
+        train_loss, train_preds, train_targets, _ = run_epoch(
+            model, train_loader, criterion, optimizer, device
+        )
+        val_loss, val_preds, val_targets, val_steps = run_epoch(
+            model, val_loader, criterion, None, device
+        )
+        train_metrics = summarize_metrics(train_preds, train_targets)
+        val_metrics = summarize_metrics(val_preds, val_targets)
+
+        print(
+            f"epoch={epoch} "
+            f"train_loss={train_loss:.4f} "
+            f"val_loss={val_loss:.4f} "
+            f"train_macro_f1={train_metrics['macro_f1']:.4f} "
+            f"val_macro_f1={val_metrics['macro_f1']:.4f}"
+        )
+
+        if val_steps:
+            all_steps = np.concatenate(val_steps)
+            print(f"avg_validation_steps={all_steps.mean():.2f} max_validation_steps={all_steps.max()}")
+
+    print("\nValidation metrics:")
+    print(classification_report(val_targets, val_preds, digits=4))
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,13 @@
+.DS_Store
+.pycache_local/
+__pycache__/
+*.pyc
+.venv/
+
+data/
+!data/.gitkeep
+
+CMAPSSData/
+IMS/
+
+.ipynb_checkpoints/
