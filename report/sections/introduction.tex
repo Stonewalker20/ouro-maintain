@@ -1,0 +1,18 @@
+\section{Introduction}
+Predictive maintenance systems aim to detect degradation early enough to reduce downtime, avoid secondary damage, and schedule service before failure. In practice, the core challenge is not just classification accuracy, but making good decisions under limited compute, noisy telemetry, and incomplete operational context. Benchmark datasets such as C-MAPSS have made this problem concrete for RUL-style forecasting, but they also expose the limits of one-pass prediction when failure evidence accumulates gradually \cite{Saxena2008CMAPSS,Ramasso2014CMAPSS}.
+
+That setting matches the strengths of looped latent reasoning: the model can refine an internal state iteratively and stop early when the evidence is already clear. Methods such as adaptive computation time and recurrent latent refinement show that depth itself can be a learned resource rather than a fixed architectural constant \cite{Graves2016ACT,Dehghani2018UniversalTransformers,Zhu2025Ouro}.
+
+This project studies whether an adaptive looped architecture can improve maintenance triage on sequential industrial sensor data. The central hypothesis is that recurrent latent computation with learned depth allocation will produce better calibration and compute-efficiency tradeoffs than fixed-depth baselines on difficult failure windows, while remaining competitive on easier cases. IMS is included as a secondary benchmark because it stresses a slightly different failure regime based on vibration snapshots rather than engine telemetry \cite{NASAIMSBearings}.
+
+The report is organized around three contributions. First, it defines a predictive-maintenance formulation that maps sensor windows to health state, urgency, and recommended action. Second, it proposes an Ouro-inspired model with shared iterative computation and early exit. Third, it establishes an evaluation protocol spanning classification quality, compute use, and maintenance utility.
+
+\subsection{Contributions}
+\begin{itemize}
+    \item A maintenance-oriented reformulation of looped reasoning for health monitoring and triage.
+    \item A reproducible architecture that separates window encoding, latent recurrence, and adaptive exit.
+    \item A benchmarking plan using C-MAPSS and IMS to compare fixed-depth and adaptive-depth models.
+\end{itemize}
+
+\subsection{Scope}
+This scaffold is intentionally written for a five-page-or-longer IEEE conference-style report. The experimental sections are structured so results, plots, and tables can be filled in after training is complete.

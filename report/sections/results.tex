@@ -1,0 +1,21 @@
+\section{Results}
+This section is reserved for the final experimental outcomes. At minimum, it should include one table of test-set metrics, one figure showing the relationship between example difficulty and loop depth, and one qualitative example of a high-confidence early exit versus a hard case that used more internal steps.
+
+\subsection{Expected Reporting Structure}
+\begin{itemize}
+    \item Main metric table on the primary benchmark.
+    \item Secondary table or appendix row set for IMS.
+    \item Compute analysis showing average depth versus fixed-depth cost.
+    \item Calibration or confidence plots for maintenance decisions.
+\end{itemize}
+
+\subsection{Figure Placeholders}
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering Placeholder for a depth-versus-difficulty figure}}
+\caption{Adaptive depth should increase on ambiguous or degraded windows.}
+\label{fig:depth}
+\end{figure}
+
+\subsection{Narrative Placeholder}
+Once experiments are completed, this section should explain whether the adaptive looped model improved detection of critical failures, whether it reduced average compute, and whether the compute savings were concentrated in easy cases. The final discussion should also note any domain differences between C-MAPSS and IMS.

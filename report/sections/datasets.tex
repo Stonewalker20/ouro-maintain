@@ -1,0 +1,28 @@
+\section{Datasets}
+Two datasets define the initial scope of the project. C-MAPSS is the primary supervised benchmark for remaining useful life and health-state prediction, while IMS bearings serves as a complementary run-to-failure dataset for anomaly detection and degradation-stage analysis.
+
+\subsection{C-MAPSS}
+The C-MAPSS turbofan simulation data provide multivariate time series recorded under multiple operating conditions and fault modes \cite{Saxena2008CMAPSS}. Each trajectory follows an engine from healthy operation to failure, making it suitable for supervised prognostics. The dataset is widely used in prognostic benchmarking because it supports several failure prediction formulations, including direct RUL regression and classification via thresholded remaining life \cite{Ramasso2014CMAPSS}.
+
+For this project, the training protocol uses rolling windows of sensor data and derives labels from remaining useful life thresholds to produce ``normal,'' ``warning,'' and ``critical'' classes.
+
+\subsection{IMS Bearings}
+The IMS bearing dataset contains high-frequency vibration snapshots from run-to-failure experiments on rotating bearings \cite{NASAIMSBearings}. The data are stored as timestamped ASCII files and do not ship with explicit health labels, so labels must be derived from time ordering and the failure endpoint. This makes IMS useful for anomaly detection, degradation staging, and transfer testing.
+
+\subsection{Dataset Summary}
+\begin{table}[t]
+\centering
+\caption{Primary datasets used in OuroMaintain}
+\label{tab:datasets}
+\begin{tabular}{@{}p{1.7cm}p{2.1cm}p{2.0cm}p{2.1cm}@{}}
+\toprule
+Dataset & Modality & Supervision & Primary use \\
+\midrule
+C-MAPSS & Multivariate engine telemetry & RUL / labels from thresholding & Main supervised benchmark \\
+IMS bearings & Vibration snapshots & Derived from failure ordering & Secondary anomaly benchmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Preprocessing Plan}
+The preprocessing pipeline will standardize sensor channels, generate overlapping windows, and align labels to each window end point. For IMS, a spectrally informed or summary-statistic feature path may be used if end-to-end raw waveform models are not the baseline. The report should document all window lengths, stride settings, and label thresholds once experiments are finalized.

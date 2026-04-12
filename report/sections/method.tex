@@ -1,0 +1,24 @@
+\section{Method}
+\subsection{Problem Formulation}
+Given a telemetry window $x_{1:T}$ and optional context $c$, the model predicts a health state $y \in \{\text{normal}, \text{warning}, \text{critical}\}$, an optional fault or subsystem label, and a maintenance action. The architecture is designed so that the same latent reasoning block can be applied repeatedly before producing a final decision.
+
+\subsection{Architecture}
+The model has three stages. A window encoder maps raw sensor inputs to a latent representation. A shared loop block refines that latent state through repeated updates. An exit gate decides whether additional internal steps are needed. The final state feeds task-specific heads for classification and action selection. The design borrows the core idea of learned halting from adaptive computation time and the repeated refinement pattern from latent recurrence models \cite{Graves2016ACT,Dehghani2018UniversalTransformers,Banino2021PonderNet}.
+
+\begin{equation}
+h_0 = f_{\text{enc}}(x_{1:T}, c)
+\end{equation}
+\begin{equation}
+h_{k+1} = f_{\theta}(h_k, c)
+\end{equation}
+\begin{equation}
+p_{\text{exit}}^{(k)} = \sigma(W h_k + b)
+\end{equation}
+
+The loop is unrolled until the gate halts or a maximum depth is reached. This structure makes compute usage data-dependent rather than fixed, which is central to the project hypothesis. The looped reasoning framing is also aligned with the current generation of latent reasoning models, which treat repeated internal computation as a mechanism for stronger knowledge manipulation rather than simply larger parameter counts \cite{Zhu2025Ouro}.
+
+\subsection{Baselines}
+The report should compare the adaptive looped model against a direct MLP or CNN classifier, a recurrent baseline such as GRU or LSTM, and a fixed-depth version of the looped model. Those comparisons isolate the value of recurrence and the value of adaptive early exit separately.
+
+\subsection{Implementation Notes}
+The implementation will track the average depth used per example, the distribution of depths across easy and hard cases, and the latency impact of early exit. If useful, the report can also include a simple interpretability view based on channel saliency or time-window attribution.

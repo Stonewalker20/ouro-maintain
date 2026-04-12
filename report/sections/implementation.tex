@@ -1,0 +1,28 @@
+\section{Implementation}
+\subsection{Windowing and Labeling}
+The training pipeline converts each asset trajectory into overlapping windows with a fixed history length and stride. Each window is labeled using the terminal sensor state or remaining-life estimate associated with the end of the window. For C-MAPSS, the label mapping should be parameterized so that the report can compare conservative and aggressive warning thresholds. For IMS, label construction should be documented explicitly because it is derived from run ordering and failure proximity rather than shipped supervision.
+
+\subsection{Model Variants}
+Three model families belong in the final experiment table. The first is a standard direct baseline that maps features to classes in one pass. The second is a fixed-depth recurrent model that repeats the same latent transformation a constant number of times. The third is the adaptive model, which adds a learned exit gate so that the number of latent refinements depends on the input.
+
+\subsection{Training Recipe}
+The final report should list the optimizer, learning-rate schedule, batch size, window size, maximum loop depth, and early-exit threshold. If the implementation uses class weighting or focal loss to stabilize critical-failure recall, that choice should be justified here. The same section should also record random-seed policy and any data augmentation used for the vibration signals.
+
+\subsection{Evaluation Pipeline}
+Evaluation should run on a held-out test set with frozen thresholds. Reported metrics should be aggregated over multiple runs if the training procedure has variance. For the adaptive model, every example should emit both a prediction and a depth statistic so that correctness and compute use can be analyzed together.
+
+\begin{algorithm}[t]
+\caption{Adaptive looped maintenance inference}
+\label{alg:adaptive}
+\begin{algorithmic}[1]
+\STATE Encode input window into latent state $h_0$
+\FOR{$k = 0$ to $K-1$}
+    \STATE Update latent state $h_{k+1} \leftarrow f_\theta(h_k, c)$
+    \STATE Compute exit probability $p_{\text{exit}}^{(k)}$
+    \IF{$p_{\text{exit}}^{(k)}$ exceeds threshold}
+        \STATE Break and emit final prediction
+    \ENDIF
+\ENDFOR
+\STATE Apply task heads to final latent state
+\end{algorithmic}
+\end{algorithm}

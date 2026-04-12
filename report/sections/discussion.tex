@@ -1,0 +1,13 @@
+\section{Discussion}
+The final version of this report should interpret the experimental results in practical maintenance terms, not only in aggregate ML metrics. A strong outcome would show that the adaptive looped model preserves recall on critical failures while reducing average internal depth on routine windows. That would support the claim that iterative latent reasoning is useful for maintenance triage, where most cases are straightforward but a small subset requires deeper inspection.
+
+\subsection{Threats to Validity}
+The main threats are dataset bias, label construction choices, and split leakage. C-MAPSS thresholds can materially change class balance, while IMS labels are derived rather than observed directly. Cross-dataset comparisons should therefore be treated as evidence of generalization behavior, not a perfect apples-to-apples comparison of supervisory signal.
+
+\subsection{Interpretation Checklist}
+\begin{itemize}
+    \item Check whether hard cases consistently consume more loop steps than easy cases.
+    \item Check whether depth savings come from true early exits rather than overconfident misclassifications.
+    \item Check whether the adaptive model stays calibrated under class imbalance.
+    \item Check whether C-MAPSS and IMS agree on the same qualitative degradation patterns.
+\end{itemize}

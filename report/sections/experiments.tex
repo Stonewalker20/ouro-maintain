@@ -1,0 +1,26 @@
+\section{Experiments}
+\subsection{Experimental Protocol}
+All experiments should use train, validation, and test splits defined at the asset level so that windows from the same machine do not leak across splits. For C-MAPSS, the evaluation protocol should follow standard prognostics practice with a held-out test set and a validation set for threshold tuning. For IMS, split construction should preserve run-to-failure structure and avoid using future information when deriving labels.
+
+\subsection{Metrics}
+Classification results will be reported with accuracy, precision, recall, F1, and AUROC. Maintenance-specific reporting should include false negatives on critical failures, calibration quality, average loop depth, and latency. For any RUL-style formulation, a regression metric such as MAE or score-weighted error should be included.
+
+\subsection{Ablations}
+The final paper should include ablations for maximum loop depth, exit threshold, encoder choice, and label granularity. A useful table will compare fixed-depth versus adaptive-depth performance at matched compute budgets.
+
+\subsection{Planned Table Template}
+\begin{table}[t]
+\centering
+\caption{Placeholder for main test-set results}
+\label{tab:results-placeholder}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & F1 & AUROC & Avg. depth & Latency \\
+\midrule
+MLP/CNN baseline & -- & -- & -- & -- \\
+GRU/LSTM baseline & -- & -- & -- & -- \\
+Fixed-depth loop & -- & -- & -- & -- \\
+Adaptive looped model & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
