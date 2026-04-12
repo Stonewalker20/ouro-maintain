@@ -9,5 +9,7 @@ data/
 
 CMAPSSData/
 IMS/
+IMS_extracted/
+artifacts/
 
 .ipynb_checkpoints/

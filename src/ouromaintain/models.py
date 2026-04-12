@@ -76,7 +76,6 @@ class AdaptiveLoopModel(nn.Module):
         self.encoder = WindowEncoder(config.input_dim, config.hidden_dim)
         self.loop = SharedLoopBlock(config.hidden_dim)
         self.classifier = nn.Linear(config.hidden_dim, config.num_classes)
-        self.exit_head = nn.Linear(config.hidden_dim, 1)
 
     def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
         context = self.encoder(x)
@@ -84,25 +83,29 @@ class AdaptiveLoopModel(nn.Module):
         batch_size = x.size(0)
         finished = torch.zeros(batch_size, dtype=torch.bool, device=x.device)
         steps = torch.zeros(batch_size, dtype=torch.long, device=x.device)
+        final_logits = torch.zeros(batch_size, self.classifier.out_features, device=x.device)
         last_exit_prob = torch.zeros(batch_size, device=x.device)
 
         for step_idx in range(1, self.max_loops + 1):
             h = self.loop(h, context)
-            exit_prob = torch.sigmoid(self.exit_head(h)).squeeze(-1)
-            last_exit_prob = exit_prob
+            logits = self.classifier(h)
+            confidence = torch.softmax(logits, dim=-1).max(dim=-1).values
+            last_exit_prob = confidence
 
-            should_exit = exit_prob >= self.exit_threshold
+            should_exit = confidence >= self.exit_threshold
             new_finished = should_exit & ~finished
             steps = torch.where(new_finished, torch.full_like(steps, step_idx), steps)
+            final_logits = torch.where(new_finished.unsqueeze(-1), logits, final_logits)
             finished = finished | should_exit
 
             if bool(finished.all()):
                 break
 
-        steps = torch.where(steps == 0, torch.full_like(steps, self.max_loops), steps)
         logits = self.classifier(h)
+        steps = torch.where(steps == 0, torch.full_like(steps, self.max_loops), steps)
+        final_logits = torch.where(finished.unsqueeze(-1), final_logits, logits)
         return {
-            "logits": logits,
+            "logits": final_logits,
             "steps": steps,
             "exit_probability": last_exit_prob,
         }
