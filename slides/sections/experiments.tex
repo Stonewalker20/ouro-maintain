@@ -11,9 +11,9 @@
 
 \begin{frame}{Evaluation Plan}
   \begin{itemize}
-    \item Classification: accuracy, macro F1, weighted F1, AUROC.
-    \item Maintenance utility: critical-failure recall, confusion matrix, action accuracy.
-    \item Compute: average loop depth, max depth, approximate latency.
-    \item Ablations: max depth, exit policy, encoder choice, single-task versus multi-task heads.
+    \item Primary dataset: C-MAPSS FD001 with official test labels.
+    \item Models: direct baseline, fixed-depth loop, adaptive loop.
+    \item Metrics: accuracy, macro F1, weighted F1, average loop depth.
+    \item Secondary path: IMS run-to-failure preprocessing and temporal evaluation.
   \end{itemize}
 \end{frame}

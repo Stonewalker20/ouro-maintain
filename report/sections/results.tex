@@ -1,21 +1,16 @@
 \section{Results}
-This section is reserved for the final experimental outcomes. At minimum, it should include one table of test-set metrics, one figure showing the relationship between example difficulty and loop depth, and one qualitative example of a high-confidence early exit versus a hard case that used more internal steps.
+The primary quantitative results come from C-MAPSS FD001. The adaptive looped model produced the strongest macro F1 score on the held-out test set while using far fewer internal steps than the fixed-depth loop.
 
-\subsection{Expected Reporting Structure}
+\subsection{Primary Findings}
 \begin{itemize}
-    \item Main metric table on the primary benchmark.
-    \item Secondary table or appendix row set for IMS.
-    \item Compute analysis showing average depth versus fixed-depth cost.
-    \item Calibration or confidence plots for maintenance decisions.
+    \item The adaptive model achieved test macro F1 of 0.9183, outperforming the fixed-depth loop at 0.8891 and the direct baseline at 0.8609.
+    \item The adaptive model required an average of only 1.21 recurrent steps on the test set, compared with 6.0 steps for the fixed-depth loop.
+    \item Relative to the fixed-depth loop, the adaptive policy reduced average loop computation by approximately 79.8\%.
+    \item The adaptive model preserved strong critical-class performance, reaching perfect precision and 0.75 recall on the small critical test subset.
 \end{itemize}
 
-\subsection{Figure Placeholders}
-\begin{figure}[t]
-\centering
-\fbox{\parbox{0.92\linewidth}{\centering Placeholder for a depth-versus-difficulty figure}}
-\caption{Adaptive depth should increase on ambiguous or degraded windows.}
-\label{fig:depth}
-\end{figure}
+\subsection{Validation and Generalization}
+On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. This pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance.
 
-\subsection{Narrative Placeholder}
-Once experiments are completed, this section should explain whether the adaptive looped model improved detection of critical failures, whether it reduced average compute, and whether the compute savings were concentrated in easy cases. The final discussion should also note any domain differences between C-MAPSS and IMS.
+\subsection{Secondary Dataset Status}
+The IMS pipeline is implemented with extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Initial exploratory runs showed that IMS is substantially harder to evaluate with a strict temporal split because label distributions shift sharply late in the run and some splits omit one of the three health classes. For this reason, the main quantitative claims in this report are anchored on C-MAPSS, while IMS is treated as an implemented secondary path for future robustness analysis rather than a mature benchmark.

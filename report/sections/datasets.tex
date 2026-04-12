@@ -4,7 +4,7 @@ Two datasets define the initial scope of the project. C-MAPSS is the primary sup
 \subsection{C-MAPSS}
 The C-MAPSS turbofan simulation data provide multivariate time series recorded under multiple operating conditions and fault modes \cite{Saxena2008CMAPSS}. Each trajectory follows an engine from healthy operation to failure, making it suitable for supervised prognostics. The dataset is widely used in prognostic benchmarking because it supports several failure prediction formulations, including direct RUL regression and classification via thresholded remaining life \cite{Ramasso2014CMAPSS}.
 
-For this project, the training protocol uses rolling windows of sensor data and derives labels from remaining useful life thresholds to produce ``normal,'' ``warning,'' and ``critical'' classes.
+For this project, the training protocol uses rolling windows of sensor data and derives labels from remaining useful life thresholds to produce ``normal,'' ``warning,'' and ``critical'' classes. Windows use length 32 and stride 8. Thresholds are set to RUL $> 50$ for normal, $15 < \text{RUL} \leq 50$ for warning, and $\text{RUL} \leq 15$ for critical.
 
 \subsection{IMS Bearings}
 The IMS bearing dataset contains high-frequency vibration snapshots from run-to-failure experiments on rotating bearings \cite{NASAIMSBearings}. The data are stored as timestamped ASCII files and do not ship with explicit health labels, so labels must be derived from time ordering and the failure endpoint. This makes IMS useful for anomaly detection, degradation staging, and transfer testing.
@@ -24,5 +24,5 @@ IMS bearings & Vibration snapshots & Derived from failure ordering & Secondary a
 \end{tabular}
 \end{table}
 
-\subsection{Preprocessing Plan}
-The preprocessing pipeline will standardize sensor channels, generate overlapping windows, and align labels to each window end point. For IMS, a spectrally informed or summary-statistic feature path may be used if end-to-end raw waveform models are not the baseline. The report should document all window lengths, stride settings, and label thresholds once experiments are finalized.
+\subsection{Preprocessing}
+The implemented preprocessing pipeline standardizes sensor channels using statistics fit on the training split, generates overlapping windows, and aligns labels to each window end point. Validation splits are created at the engine level for C-MAPSS to avoid leakage between windows from the same asset. For IMS, the implemented secondary pipeline converts each vibration snapshot into summary statistics per channel and then applies temporal windows over the derived feature stream.

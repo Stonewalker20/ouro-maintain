@@ -1,26 +1,27 @@
 \section{Experiments}
 \subsection{Experimental Protocol}
-All experiments should use train, validation, and test splits defined at the asset level so that windows from the same machine do not leak across splits. For C-MAPSS, the evaluation protocol should follow standard prognostics practice with a held-out test set and a validation set for threshold tuning. For IMS, split construction should preserve run-to-failure structure and avoid using future information when deriving labels.
+All reported primary results use C-MAPSS FD001. Training uses the official run-to-failure trajectories, validation uses an engine-level held-out split from the training set, and testing uses the official FD001 test split with its published RUL labels. Each model is trained for six epochs with batch size 128, hidden size 128, and a maximum loop depth of six steps. The adaptive model uses the same backbone as the fixed-depth loop and differs only in the early-exit policy.
 
 \subsection{Metrics}
-Classification results will be reported with accuracy, precision, recall, F1, and AUROC. Maintenance-specific reporting should include false negatives on critical failures, calibration quality, average loop depth, and latency. For any RUL-style formulation, a regression metric such as MAE or score-weighted error should be included.
+Classification results are reported with accuracy, macro F1, and weighted F1. Maintenance-specific reporting emphasizes critical-failure recall and average loop depth. Latency was not directly benchmarked in wall-clock milliseconds, so average loop depth is used as the main compute proxy for comparing fixed and adaptive recurrence.
 
 \subsection{Ablations}
-The final paper should include ablations for maximum loop depth, exit threshold, encoder choice, and label granularity. A useful table will compare fixed-depth versus adaptive-depth performance at matched compute budgets.
+This report focuses on the core comparison requested by the project concept: direct prediction, fixed-depth looping, and adaptive looping under a shared maximum depth. Future work should add ablations for maximum loop depth, exit threshold, encoder choice, and label granularity.
 
-\subsection{Planned Table Template}
+\subsection{Main Comparison}
 \begin{table}[t]
 \centering
-\caption{Placeholder for main test-set results}
-\label{tab:results-placeholder}
+\caption{C-MAPSS FD001 test-set results}
+\label{tab:results-main}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Model & F1 & AUROC & Avg. depth & Latency \\
+Model & Accuracy & Macro F1 & Avg. depth & Max depth \\
 \midrule
-MLP/CNN baseline & -- & -- & -- & -- \\
-GRU/LSTM baseline & -- & -- & -- & -- \\
-Fixed-depth loop & -- & -- & -- & -- \\
-Adaptive looped model & -- & -- & -- & -- \\
+Direct baseline & 0.9746 & 0.8609 & 0.0 & 0 \\
+Fixed-depth loop & 0.9877 & 0.8891 & 6.0 & 6 \\
+Adaptive looped model & 0.9838 & 0.9183 & 1.21 & 6 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+The main outcome is that adaptive looping improves macro F1 by 2.9 points over the fixed-depth loop while using only about 20.2\% of the fixed loop's average depth budget. This corresponds to an approximate 79.8\% reduction in loop computation relative to the fixed-depth recurrent baseline.

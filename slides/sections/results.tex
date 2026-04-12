@@ -1,18 +1,26 @@
 \section{Results}
 
-\begin{frame}{Results Placeholder}
+\begin{frame}{C-MAPSS FD001 Test Results}
+  \begin{tabular}{lccc}
+    \toprule
+    Model & Accuracy & Macro F1 & Avg. Depth \\
+    \midrule
+    Baseline & 0.9746 & 0.8609 & 0.00 \\
+    Fixed loop & 0.9877 & 0.8891 & 6.00 \\
+    Adaptive loop & 0.9838 & 0.9183 & 1.21 \\
+    \bottomrule
+  \end{tabular}
+\vspace{0.4cm}
   \begin{itemize}
-    \item Insert final metric table here after training completes.
-    \item Add confusion matrix and depth-distribution plots.
-    \item Highlight the best model and the compute tradeoff.
-    \item Replace this slide with a figure-heavy summary once experiments are available.
+    \item Best macro F1 came from the adaptive loop.
+    \item Average loop compute dropped by about 79.8\% versus fixed depth.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Expected Result Story}
+\begin{frame}{Result Interpretation}
   \begin{itemize}
-    \item Adaptive looping should spend more steps on ambiguous or rare cases.
-    \item Easy normal windows should exit earlier and cheaper.
-    \item The project goal is not just accuracy, but useful triage under compute constraints.
+    \item Fixed depth won on validation macro F1, but adaptive depth generalized better on test.
+    \item Adaptive looping improved class balance, especially beyond the dominant normal class.
+    \item The main value is not just accuracy; it is better triage under a lower average compute budget.
   \end{itemize}
 \end{frame}

@@ -18,16 +18,16 @@
   \vspace{0.3cm}
   \begin{itemize}
     \item Shared recurrent block refines a latent state for up to $K$ steps.
-    \item Learned exit gate stops early on easy examples.
+    \item Confidence-based exit gate stops early on easy examples.
     \item Final heads predict health class, severity, and action.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Training Configuration}
   \begin{itemize}
-    \item Baseline: direct classifier on flattened or pooled window features.
-    \item Fixed-depth loop: always run $K$ latent refinement steps.
-    \item Adaptive loop: stop when exit confidence exceeds threshold.
-    \item Encoder options: MLP, GRU, or 1D CNN.
+    \item Encoder: GRU with hidden size 128.
+    \item Windowing: length 32, stride 8 on CMAPSS FD001.
+    \item Fixed-depth loop: always run $K=6$ latent refinement steps.
+    \item Adaptive loop: stop when class confidence exceeds 0.8.
   \end{itemize}
 \end{frame}

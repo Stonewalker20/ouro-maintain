@@ -92,8 +92,14 @@ def run_epoch(
 def summarize_metrics(preds: np.ndarray, targets: np.ndarray) -> dict[str, float]:
     return {
         "accuracy": accuracy_score(targets, preds),
-        "macro_f1": f1_score(targets, preds, average="macro"),
-        "weighted_f1": f1_score(targets, preds, average="weighted"),
+        "macro_f1": f1_score(targets, preds, average="macro", labels=[0, 1, 2], zero_division=0),
+        "weighted_f1": f1_score(
+            targets,
+            preds,
+            average="weighted",
+            labels=[0, 1, 2],
+            zero_division=0,
+        ),
     }
 
 
@@ -119,6 +125,7 @@ def save_metrics(
     report = classification_report(
         targets,
         preds,
+        labels=[0, 1, 2],
         target_names=LABEL_NAMES,
         digits=4,
         zero_division=0,

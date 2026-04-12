@@ -110,6 +110,12 @@ def load_ims_run(extracted_root: str, run_name: str, config: DataConfig) -> pd.D
     if not run_dir.exists():
         raise ValueError(f"IMS run directory not found: {run_dir}")
 
+    cache_dir = Path(extracted_root) / ".cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_dir / f"{run_name}_features.csv"
+    if cache_path.exists():
+        return pd.read_csv(cache_path)
+
     files = sorted(path for path in run_dir.rglob("*") if path.is_file() and not path.name.startswith("."))
     if not files:
         raise ValueError(f"No IMS snapshot files found under {run_dir}")
@@ -139,7 +145,9 @@ def load_ims_run(extracted_root: str, run_name: str, config: DataConfig) -> pd.D
         row[config.label_col] = label
         rows.append(row)
 
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    df.to_csv(cache_path, index=False)
+    return df
 
 
 def fit_standardizer(features: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -157,6 +165,27 @@ def split_windowed_by_asset(
     data: WindowedData, val_ratio: float, seed: int
 ) -> tuple[WindowedData, WindowedData]:
     asset_ids = np.unique(data.asset_ids)
+    if len(asset_ids) < 2:
+        split_idx = max(1, int(len(data.labels) * (1 - val_ratio)))
+        if split_idx >= len(data.labels):
+            split_idx = len(data.labels) - 1
+        train_slice = slice(0, split_idx)
+        val_slice = slice(split_idx, len(data.labels))
+        return (
+            WindowedData(
+                features=data.features[train_slice],
+                labels=data.labels[train_slice],
+                asset_ids=data.asset_ids[train_slice],
+                feature_names=data.feature_names,
+            ),
+            WindowedData(
+                features=data.features[val_slice],
+                labels=data.labels[val_slice],
+                asset_ids=data.asset_ids[val_slice],
+                feature_names=data.feature_names,
+            ),
+        )
+
     rng = np.random.default_rng(seed)
     shuffled = asset_ids.copy()
     rng.shuffle(shuffled)

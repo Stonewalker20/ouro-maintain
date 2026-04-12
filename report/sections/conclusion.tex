@@ -1,5 +1,5 @@
 \section{Conclusion}
-OuroMaintain is framed as a predictive-maintenance application of looped latent reasoning. The intended contribution is not only a stronger classifier, but a more useful decision system that can allocate computation according to task difficulty. The final report should close by summarizing whether adaptive looping improved maintenance quality, reduced inference cost, and transferred cleanly across C-MAPSS and IMS.
+OuroMaintain demonstrates that adaptive latent looping is a credible predictive-maintenance strategy on C-MAPSS. The strongest result in this implementation is that the adaptive model improved test macro F1 over both the direct baseline and the fixed-depth loop while using far less recurrent compute than the fixed-depth alternative. In practical maintenance terms, this means the system can reserve deeper internal reasoning for harder windows without paying the full compute cost on routine cases.
 
 \subsection{Future Work}
-Likely next steps include adding more maintenance datasets, turning the evaluation into a multitask setup with fault localization, and integrating the model into a small dashboard for inspection and triage.
+Likely next steps include stabilizing the IMS evaluation protocol, adding more maintenance datasets, turning the evaluation into a multitask setup with fault localization and action prediction, and integrating the model into a small dashboard for inspection and triage.

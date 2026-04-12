@@ -2,9 +2,9 @@
 
 \begin{frame}{Current Limitations}
   \begin{itemize}
-    \item CMAPSS and IMS do not cover every real deployment condition.
-    \item IMS labels are implicit and require careful preprocessing.
-    \item The current scaffold leaves room for calibration and interpretability work.
-    \item Maintenance action labels may need hand-designed heuristics at first.
+    \item CMAPSS is simulated telemetry, not a live maintenance deployment stream.
+    \item IMS labels are implicit and temporal splits can omit one health class.
+    \item The current system predicts health state only; action labels are still heuristic.
+    \item Compute is measured by loop depth, not full latency profiling.
   \end{itemize}
 \end{frame}
