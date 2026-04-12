@@ -71,6 +71,10 @@ telemetry window -> encoder -> latent state h0
 ```text
 docs/
   experiment-plan.md
+  datasets.md
+scripts/
+  download_datasets.sh
+  extract_ims.sh
 src/ouromaintain/
   config.py
   data.py
@@ -102,16 +106,34 @@ pyproject.toml
 Create an environment and install dependencies:
 
 ```bash
-python -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
 ```
 
-Run the starter training script on CMAPSS:
+Run the CMAPSS experiment:
 
 ```bash
-python3 -m pip install -e .
-python3 -m ouromaintain.train --dataset cmapss --cmapss-root CMAPSSData --cmapss-subset FD001 --model adaptive
+python3 -m ouromaintain.train \
+  --dataset cmapss \
+  --cmapss-root CMAPSSData \
+  --cmapss-subset FD001 \
+  --model adaptive \
+  --output-dir artifacts/cmapss_fd001_adaptive
+```
+
+Run the IMS experiment after extraction:
+
+```bash
+bash scripts/extract_ims.sh
+python3 -m ouromaintain.train \
+  --dataset ims \
+  --ims-root IMS_extracted \
+  --ims-run 1st_test \
+  --model adaptive \
+  --output-dir artifacts/ims_1st_test_adaptive
 ```
 
 Run the same trainer on a labeled CSV:
@@ -119,6 +141,17 @@ Run the same trainer on a labeled CSV:
 ```bash
 python3 -m ouromaintain.train --dataset csv --data-path data/telemetry.csv --model adaptive
 ```
+
+## Training outputs
+
+Each run writes artifacts to the selected output directory:
+
+- `best_model.pt`
+- `history.csv`
+- `validation_metrics.json`
+- `validation_classification_report.txt`
+- `validation_confusion_matrix.json`
+- `test_metrics.json` for datasets with a held-out official test split
 
 ## First milestone
 

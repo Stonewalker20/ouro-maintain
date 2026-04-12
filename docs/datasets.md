@@ -25,6 +25,50 @@ python3 -m ouromaintain.train \
   --critical-rul 15
 ```
 
+The trainer uses:
+
+- official CMAPSS training trajectories for fitting
+- engine-level validation splits to avoid leakage across windows
+- official CMAPSS test trajectories plus `RUL_FD00x.txt` for final evaluation
+
+## Secondary dataset: IMS bearing run-to-failure
+
+`IMS/` is currently stored as `.rar` archives and should be treated as a secondary benchmark.
+
+Why secondary:
+
+- it is run-to-failure data with implicit rather than explicit class labels
+- it is strong for anomaly or health-stage progression analysis
+- it is weaker than CMAPSS for clean supervised benchmarking
+
+Extract it with:
+
+```bash
+bash scripts/extract_ims.sh
+```
+
+Then train on one extracted run:
+
+```bash
+python3 -m ouromaintain.train \
+  --dataset ims \
+  --ims-root IMS_extracted \
+  --ims-run 1st_test \
+  --model adaptive \
+  --output-dir artifacts/ims_1st_test_adaptive
+```
+
+Current IMS framing in this repo:
+
+- each snapshot file becomes one timestep
+- per-channel statistical features are computed from raw vibration values
+- health labels are derived from run progress:
+  - early run = `normal`
+  - middle run = `warning`
+  - late run = `critical`
+
+This makes IMS useful for a secondary degradation-stage experiment even without explicit label files.
+
 ## Kaggle datasets
 
 The two Kaggle sources you listed are captured in `scripts/download_datasets.sh`.
@@ -44,5 +88,5 @@ bash scripts/download_datasets.sh
 
 1. Train on `CMAPSSData/FD001`
 2. Compare baseline vs fixed loop vs adaptive loop
-3. Add one of the Kaggle datasets as a second domain
-4. Normalize the output interface so the dashboard can swap datasets
+3. Add IMS as a secondary run-to-failure benchmark
+4. Add one Kaggle dataset as an optional third domain
