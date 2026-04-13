@@ -12,5 +12,5 @@ The main threats are dataset bias, label construction choices, and split leakage
     \item On C-MAPSS FD001, hard windows did consume more average loop depth than easy windows, while the overall test average remained low at 1.21 steps.
     \item Depth savings did not come purely from overconfident collapsing behavior: the adaptive model improved macro F1 over both the direct and fixed-depth recurrent baselines on the official test split.
     \item The largest residual error mode remained confusion between normal and warning states rather than catastrophic collapse across all classes.
-    \item IMS followed the same qualitative pattern as C-MAPSS in the sense that adaptive looping remained effective under a different sensing modality, although the weaker supervision on IMS makes those results more exploratory.
+    \item The full matrix preserved the same qualitative pattern as FD001: every CMAPSS subset and all IMS runs favored the adaptive model over the LLM baseline by a large macro-F1 margin.
 \end{itemize}

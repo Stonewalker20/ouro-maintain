@@ -53,21 +53,20 @@
 \begin{frame}{All Dataset Matrix}
   \begin{tabular}{lccc}
     \toprule
-    Dataset & Split & Macro F1 & Avg. Depth \\
+    Dataset & Adaptive & LLM & Gap \\
     \midrule
-    CMAPSS FD001 LLM & Test & 0.3183 & 0.00 \\
-    CMAPSS FD001 & Test & 0.9183 & 1.21 \\
-    CMAPSS FD002 & Test & 0.9656 & 1.11 \\
-    CMAPSS FD003 & Test & 0.8300 & 1.20 \\
-    CMAPSS FD004 & Test & 0.9280 & 1.12 \\
-    IMS 1st & Val & 0.9773 & 1.54 \\
-    IMS 2nd & Val & 0.9501 & 2.20 \\
-    IMS 4th & Val & 0.9417 & 1.51 \\
+    FD001 & 0.9183 & 0.3183 & +0.6000 \\
+    FD002 & 0.9656 & 0.3163 & +0.6494 \\
+    FD003 & 0.8300 & 0.3239 & +0.5061 \\
+    FD004 & 0.9280 & 0.3219 & +0.6061 \\
+    IMS 1st & 0.9773 & 0.2481 & +0.7292 \\
+    IMS 2nd & 0.9501 & 0.2447 & +0.7054 \\
+    IMS 4th & 0.9417 & 0.2495 & +0.6922 \\
     \bottomrule
   \end{tabular}
 \vspace{0.4cm}
   \begin{itemize}
-    \item CMAPSS uses official test splits.
-    \item IMS uses stratified validation in this project implementation because temporal-tail splits dropped health states.
+    \item The adaptive model beats the LLM baseline on every local dataset in the matrix.
+    \item CMAPSS rows are official test splits; IMS rows are validation-only comparisons.
   \end{itemize}
 \end{frame}

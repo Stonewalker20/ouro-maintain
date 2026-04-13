@@ -36,6 +36,20 @@ The adaptive loop achieved the best test macro F1 while reducing average loop co
 - The LLM baseline maintained strong nominal accuracy on the dominant class but failed on minority-state macro F1.
 - The adaptive loop was about `101x` faster per sample than the LLM baseline on CPU benchmarking.
 
+### Full Matrix Comparison
+
+| Dataset | Adaptive Macro F1 | LLM Macro F1 | Gap |
+|---|---:|---:|---:|
+| `CMAPSS FD001` | 0.9183 | 0.3183 | 0.6000 |
+| `CMAPSS FD002` | 0.9656 | 0.3163 | 0.6494 |
+| `CMAPSS FD003` | 0.8300 | 0.3239 | 0.5061 |
+| `CMAPSS FD004` | 0.9280 | 0.3219 | 0.6061 |
+| `IMS 1st_test` | 0.9773 | 0.2481 | 0.7292 |
+| `IMS 2nd_test` | 0.9501 | 0.2447 | 0.7054 |
+| `IMS 4th_test/txt` | 0.9417 | 0.2495 | 0.6922 |
+
+The full matrix now shows the same pattern on every local dataset: the adaptive looped model decisively outperforms the text-serialized LLM baseline on class-balanced maintenance prediction.
+
 ## IMS
 
 The IMS preprocessing and training path is implemented, including extraction, statistical feature generation, caching, and stratified validation evaluation.

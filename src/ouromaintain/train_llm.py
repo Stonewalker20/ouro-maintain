@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModel, AutoTokenizer
 
 from .config import DataConfig, TrainConfig
-from .data import build_windows, load_cmapss_train_test, split_windowed_by_asset
+from .data import build_windows, load_cmapss_train_test, load_ims_run, load_telemetry_csv, split_windowed_by_asset
 
 LABEL_NAMES = ["normal", "warning", "critical"]
 ACTION_NAMES = ["monitor", "schedule_service", "inspect_urgent", "shutdown_now"]
@@ -416,8 +416,15 @@ def save_history(output_dir: Path, history: list[dict[str, float]]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train an LLM baseline on text-serialized telemetry windows.")
+    parser.add_argument("--dataset", choices=["csv", "cmapss", "ims"], default="cmapss")
+    parser.add_argument("--data-path")
     parser.add_argument("--cmapss-root", default="CMAPSSData")
     parser.add_argument("--cmapss-subset", default="FD001", choices=["FD001", "FD002", "FD003", "FD004"])
+    parser.add_argument("--ims-root", default="IMS_extracted")
+    parser.add_argument("--ims-run", default="1st_test")
+    parser.add_argument("--ims-file-step", type=int, default=1)
+    parser.add_argument("--window-size", type=int, default=32)
+    parser.add_argument("--stride", type=int, default=8)
     parser.add_argument("--backbone", default="distilbert-base-uncased")
     parser.add_argument("--epochs", type=int, default=2)
     parser.add_argument("--batch-size", type=int, default=16)
@@ -425,25 +432,55 @@ def main() -> None:
     parser.add_argument("--max-length", type=int, default=256)
     parser.add_argument("--output-dir", default="artifacts/cmapss_fd001_llm")
     parser.add_argument("--latency-batches", type=int, default=16)
+    parser.add_argument(
+        "--single-asset-split",
+        choices=["temporal", "stratified", "stage_temporal"],
+        default="temporal",
+    )
     parser.add_argument("--freeze-backbone", action="store_true", default=True)
     args = parser.parse_args()
 
-    data_config = DataConfig()
+    data_config = DataConfig(window_size=args.window_size, stride=args.stride)
     train_config = TrainConfig(batch_size=args.batch_size, epochs=args.epochs)
     set_seed(train_config.seed)
 
-    train_df, test_df = load_cmapss_train_test(args.cmapss_root, args.cmapss_subset, data_config)
-    train_windowed = build_windows(train_df, data_config)
-    train_split, val_split = split_windowed_by_asset(
-        train_windowed, train_config.val_ratio, train_config.seed, "temporal"
-    )
+    split_mode = args.single_asset_split
+    if args.dataset == "ims" and split_mode == "temporal":
+        split_mode = "stage_temporal"
+        print("ims_single_asset_split=stage_temporal", flush=True)
+
+    test_windowed = None
+    if args.dataset == "csv":
+        if not args.data_path:
+            raise ValueError("--data-path is required when --dataset csv is used.")
+        df = load_telemetry_csv(args.data_path, data_config)
+        windowed = build_windows(df, data_config)
+        train_split, val_split = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
+    elif args.dataset == "ims":
+        df = load_ims_run(args.ims_root, args.ims_run, data_config, file_step=args.ims_file_step)
+        windowed = build_windows(df, data_config)
+        train_split, val_split = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
+    else:
+        train_df, test_df = load_cmapss_train_test(args.cmapss_root, args.cmapss_subset, data_config)
+        train_windowed = build_windows(train_df, data_config)
+        test_windowed = build_windows(test_df, data_config)
+        train_split, val_split = split_windowed_by_asset(
+            train_windowed, train_config.val_ratio, train_config.seed, split_mode
+        )
+
     train_text = build_text_data(train_split)
     val_text = build_text_data(val_split)
-    test_text = build_text_data(build_windows(test_df, data_config))
-    print(
-        f"text_windows train={len(train_text.texts)} val={len(val_text.texts)} test={len(test_text.texts)}",
-        flush=True,
-    )
+    test_text = build_text_data(test_windowed) if test_windowed is not None else None
+    if test_text is not None:
+        print(
+            f"text_windows train={len(train_text.texts)} val={len(val_text.texts)} test={len(test_text.texts)}",
+            flush=True,
+        )
+    else:
+        print(
+            f"text_windows train={len(train_text.texts)} val={len(val_text.texts)} test=none",
+            flush=True,
+        )
 
     tokenizer = AutoTokenizer.from_pretrained(args.backbone, local_files_only=True)
     print(f"tokenizer_ready backbone={args.backbone}", flush=True)
@@ -463,18 +500,22 @@ def main() -> None:
         tokenizer,
         args.max_length,
     )
-    test_dataset = TokenizedTelemetryDataset(
-        test_text.texts,
-        test_text.labels,
-        test_text.action_labels,
-        test_text.subsystem_labels,
-        tokenizer,
-        args.max_length,
+    test_dataset = (
+        TokenizedTelemetryDataset(
+            test_text.texts,
+            test_text.labels,
+            test_text.action_labels,
+            test_text.subsystem_labels,
+            tokenizer,
+            args.max_length,
+        )
+        if test_text is not None
+        else None
     )
 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False) if test_dataset is not None else None
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = MultitaskLLMBaseline(args.backbone, freeze_backbone=args.freeze_backbone).to(device)
@@ -496,10 +537,11 @@ def main() -> None:
     if args.freeze_backbone:
         train_embedded = precompute_embeddings(model, train_loader, device)
         val_embedded = precompute_embeddings(model, val_loader, device)
-        test_embedded = precompute_embeddings(model, test_loader, device)
         train_head_loader = DataLoader(train_embedded, batch_size=args.batch_size, shuffle=True)
         val_head_loader = DataLoader(val_embedded, batch_size=args.batch_size, shuffle=False)
-        test_head_loader = DataLoader(test_embedded, batch_size=args.batch_size, shuffle=False)
+        if test_loader is not None:
+            test_embedded = precompute_embeddings(model, test_loader, device)
+            test_head_loader = DataLoader(test_embedded, batch_size=args.batch_size, shuffle=False)
         optimizer = torch.optim.AdamW(
             list(model.health_head.parameters())
             + list(model.action_head.parameters())
@@ -554,11 +596,14 @@ def main() -> None:
     print("\nValidation metrics:")
     print(json.dumps(val_metrics, indent=2))
 
-    test_result = run_epoch(model, test_head_loader, health_criterion, action_criterion, subsystem_criterion, None, device)
-    test_latency = benchmark_latency(model, test_loader, device, max_batches=args.latency_batches)
-    test_metrics = save_metrics(output_dir, "test", test_result, test_latency)
-    print("\nTest metrics:")
-    print(json.dumps(test_metrics, indent=2))
+    if test_loader is not None and test_head_loader is not None:
+        test_result = run_epoch(
+            model, test_head_loader, health_criterion, action_criterion, subsystem_criterion, None, device
+        )
+        test_latency = benchmark_latency(model, test_loader, device, max_batches=args.latency_batches)
+        test_metrics = save_metrics(output_dir, "test", test_result, test_latency)
+        print("\nTest metrics:")
+        print(json.dumps(test_metrics, indent=2))
 
 
 if __name__ == "__main__":

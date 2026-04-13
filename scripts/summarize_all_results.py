@@ -18,11 +18,17 @@ CANONICAL_ARTIFACTS = {
     "cmapss_fd001_adaptive",
     "cmapss_fd001_llm",
     "cmapss_fd002_adaptive",
+    "cmapss_fd002_llm",
     "cmapss_fd003_adaptive",
+    "cmapss_fd003_llm",
     "cmapss_fd004_adaptive",
+    "cmapss_fd004_llm",
     "ims_1st_test_adaptive_stratified",
+    "ims_1st_test_llm",
     "ims_2nd_test_adaptive",
+    "ims_2nd_test_llm",
     "ims_4th_test_txt_adaptive",
+    "ims_4th_test_txt_llm",
 }
 
 
@@ -86,8 +92,8 @@ def main() -> None:
             "Canonical result set notes:",
             "",
             "- `CMAPSS FD001` includes the baseline, fixed-depth, adaptive, and LLM comparison.",
-            "- `CMAPSS FD002-FD004` report the adaptive model on the official test splits.",
-            "- `IMS 1st_test`, `2nd_test`, and `4th_test/txt` report the adaptive model on stratified validation splits.",
+            "- `CMAPSS FD002-FD004` now include both adaptive and LLM rows on the official test splits.",
+            "- `IMS 1st_test`, `2nd_test`, and `4th_test/txt` now include both adaptive and LLM rows on validation splits.",
             "- Earlier smoke runs and exploratory IMS artifacts are intentionally excluded from this final summary.",
         ]
     )
