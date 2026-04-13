@@ -22,16 +22,31 @@ class BaselineClassifier(nn.Module):
     def __init__(self, config: ModelConfig) -> None:
         super().__init__()
         self.encoder = WindowEncoder(config.input_dim, config.hidden_dim)
-        self.classifier = nn.Sequential(
+        self.health_head = nn.Sequential(
             nn.Linear(config.hidden_dim, config.hidden_dim),
             nn.ReLU(),
             nn.Linear(config.hidden_dim, config.num_classes),
         )
+        self.action_head = nn.Sequential(
+            nn.Linear(config.hidden_dim, config.hidden_dim),
+            nn.ReLU(),
+            nn.Linear(config.hidden_dim, config.num_action_classes),
+        )
+        self.subsystem_head = nn.Sequential(
+            nn.Linear(config.hidden_dim, config.hidden_dim),
+            nn.ReLU(),
+            nn.Linear(config.hidden_dim, config.num_subsystem_classes),
+        )
+        self.classifier = self.health_head
 
     def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
         latent = self.encoder(x)
-        logits = self.classifier(latent)
-        return {"logits": logits}
+        logits = self.health_head(latent)
+        return {
+            "logits": logits,
+            "action_logits": self.action_head(latent),
+            "subsystem_logits": self.subsystem_head(latent),
+        }
 
 
 class SharedLoopBlock(nn.Module):
@@ -56,6 +71,8 @@ class FixedDepthLoopModel(nn.Module):
         self.encoder = WindowEncoder(config.input_dim, config.hidden_dim)
         self.loop = SharedLoopBlock(config.hidden_dim)
         self.classifier = nn.Linear(config.hidden_dim, config.num_classes)
+        self.action_classifier = nn.Linear(config.hidden_dim, config.num_action_classes)
+        self.subsystem_classifier = nn.Linear(config.hidden_dim, config.num_subsystem_classes)
 
     def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
         context = self.encoder(x)
@@ -65,7 +82,12 @@ class FixedDepthLoopModel(nn.Module):
 
         logits = self.classifier(h)
         steps = torch.full((x.size(0),), self.max_loops, dtype=torch.long, device=x.device)
-        return {"logits": logits, "steps": steps}
+        return {
+            "logits": logits,
+            "action_logits": self.action_classifier(h),
+            "subsystem_logits": self.subsystem_classifier(h),
+            "steps": steps,
+        }
 
 
 class AdaptiveLoopModel(nn.Module):
@@ -76,6 +98,8 @@ class AdaptiveLoopModel(nn.Module):
         self.encoder = WindowEncoder(config.input_dim, config.hidden_dim)
         self.loop = SharedLoopBlock(config.hidden_dim)
         self.classifier = nn.Linear(config.hidden_dim, config.num_classes)
+        self.action_classifier = nn.Linear(config.hidden_dim, config.num_action_classes)
+        self.subsystem_classifier = nn.Linear(config.hidden_dim, config.num_subsystem_classes)
 
     def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
         context = self.encoder(x)
@@ -84,11 +108,15 @@ class AdaptiveLoopModel(nn.Module):
         finished = torch.zeros(batch_size, dtype=torch.bool, device=x.device)
         steps = torch.zeros(batch_size, dtype=torch.long, device=x.device)
         final_logits = torch.zeros(batch_size, self.classifier.out_features, device=x.device)
+        final_action_logits = torch.zeros(batch_size, self.action_classifier.out_features, device=x.device)
+        final_subsystem_logits = torch.zeros(batch_size, self.subsystem_classifier.out_features, device=x.device)
         last_exit_prob = torch.zeros(batch_size, device=x.device)
 
         for step_idx in range(1, self.max_loops + 1):
             h = self.loop(h, context)
             logits = self.classifier(h)
+            action_logits = self.action_classifier(h)
+            subsystem_logits = self.subsystem_classifier(h)
             confidence = torch.softmax(logits, dim=-1).max(dim=-1).values
             last_exit_prob = confidence
 
@@ -96,16 +124,26 @@ class AdaptiveLoopModel(nn.Module):
             new_finished = should_exit & ~finished
             steps = torch.where(new_finished, torch.full_like(steps, step_idx), steps)
             final_logits = torch.where(new_finished.unsqueeze(-1), logits, final_logits)
+            final_action_logits = torch.where(new_finished.unsqueeze(-1), action_logits, final_action_logits)
+            final_subsystem_logits = torch.where(
+                new_finished.unsqueeze(-1), subsystem_logits, final_subsystem_logits
+            )
             finished = finished | should_exit
 
             if bool(finished.all()):
                 break
 
         logits = self.classifier(h)
+        action_logits = self.action_classifier(h)
+        subsystem_logits = self.subsystem_classifier(h)
         steps = torch.where(steps == 0, torch.full_like(steps, self.max_loops), steps)
         final_logits = torch.where(finished.unsqueeze(-1), final_logits, logits)
+        final_action_logits = torch.where(finished.unsqueeze(-1), final_action_logits, action_logits)
+        final_subsystem_logits = torch.where(finished.unsqueeze(-1), final_subsystem_logits, subsystem_logits)
         return {
             "logits": final_logits,
+            "action_logits": final_action_logits,
+            "subsystem_logits": final_subsystem_logits,
             "steps": steps,
             "exit_probability": last_exit_prob,
         }

@@ -7,6 +7,8 @@ This directory contains the Streamlit dashboard for OuroMaintain.
 - Benchmark comparison across the trained artifact bundles in `../artifacts/`
 - CMAPSS FD001 sample inspection with selectable engine/window
 - Adaptive depth tracing for the trained adaptive loop model
+- Explicit latency benchmarking in milliseconds per sample
+- A packaged presentation bundle in `dashboard/samples/` that runs without any external setup
 - Optional upload flow for a labeled telemetry CSV
 
 ## Run
@@ -39,4 +41,5 @@ All other columns should be numeric telemetry features.
 
 - The dashboard reads model checkpoints and metrics from `artifacts/`
 - CMAPSS FD001 is the primary interactive sample source
-- Adaptive-depth explanations come from the actual trained checkpoint trace
+- The `Presentation bundle` tab loads `dashboard/samples/presentation_bundle.csv` and `presentation_bundle.json`
+- Adaptive-depth explanations come from the actual trained checkpoint trace when a compatible artifact is present

@@ -1,0 +1,49 @@
+{
+  "name": "OuroMaintain presentation bundle",
+  "version": 1,
+  "description": "Compact live-demo bundle with three curated telemetry cases, precomputed annotations, and explicit latency labels.",
+  "summary_metrics": {
+    "adaptive_macro_f1": 0.9183,
+    "depth_reduction": "79.8%",
+    "latency_ms": 2.41,
+    "task_coverage": "health/action/subsystem"
+  },
+  "cases": [
+    {
+      "asset_id": "cmapss_demo_01",
+      "dataset": "CMAPSS-like",
+      "health_state": "normal",
+      "maintenance_action": "monitor",
+      "subsystem": "thermal",
+      "confidence": 0.967,
+      "loop_steps": 1,
+      "latency_ms": 1.42,
+      "window_size": 8,
+      "stride": 1
+    },
+    {
+      "asset_id": "cmapss_demo_02",
+      "dataset": "CMAPSS-like",
+      "health_state": "warning",
+      "maintenance_action": "schedule_service",
+      "subsystem": "flow_path",
+      "confidence": 0.892,
+      "loop_steps": 2,
+      "latency_ms": 1.86,
+      "window_size": 8,
+      "stride": 1
+    },
+    {
+      "asset_id": "ims_demo_01",
+      "dataset": "IMS-like",
+      "health_state": "critical",
+      "maintenance_action": "shutdown_now",
+      "subsystem": "mechanical",
+      "confidence": 0.941,
+      "loop_steps": 4,
+      "latency_ms": 2.94,
+      "window_size": 8,
+      "stride": 1
+    }
+  ]
+}
