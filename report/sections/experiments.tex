@@ -6,7 +6,7 @@ All reported primary results use C-MAPSS FD001. Training uses the official run-t
 Classification results are reported with accuracy, macro F1, and weighted F1. Maintenance-specific reporting emphasizes critical-failure recall, action accuracy, subsystem accuracy, average loop depth, and measured latency in milliseconds per sample. Loop depth remains useful as an internal compute proxy, but the implementation now writes explicit latency benchmarks for validation and test artifacts as well.
 
 \subsection{Ablations}
-This report focuses on the core comparison requested by the project concept: direct prediction, fixed-depth looping, and adaptive looping under a shared maximum depth. Useful follow-on ablations now include the multitask loss weights, the stage-aware IMS label boundaries, maximum loop depth, and the exit threshold.
+The evaluation focuses on the core comparison between direct prediction, fixed-depth looping, and adaptive looping under a shared maximum depth. Useful follow-on ablations include the multitask loss weights, the stage-aware IMS label boundaries, maximum loop depth, and the exit threshold.
 
 \subsection{Main Comparison}
 \begin{table}[t]

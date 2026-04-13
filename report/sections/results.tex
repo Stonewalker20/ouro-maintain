@@ -10,7 +10,7 @@ The primary quantitative results come from C-MAPSS FD001. The adaptive looped mo
 \end{itemize}
 
 \subsection{All Dataset Results}
-Table~\ref{tab:all-datasets} summarizes the canonical local benchmark matrix. C-MAPSS FD001 is the full comparison point, while FD002--FD004 extend the adaptive model across additional official subsets. IMS results are reported on stratified validation folds because those runs do not provide a separate official test split in this project setup.
+Table~\ref{tab:all-datasets} summarizes the canonical local benchmark matrix. C-MAPSS FD001 is the full comparison point, while FD002--FD004 extend the adaptive model across additional official subsets. IMS results are reported on stratified validation folds because those runs do not provide a separate official test split under the present experimental protocol.
 
 \begin{table}[t]
 \centering
@@ -56,4 +56,4 @@ On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, w
 \end{figure}
 
 \subsection{Secondary Dataset Status}
-The IMS pipeline is implemented with extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the final reported IMS results use stratified validation instead. Under that evaluation setup, the adaptive model performed strongly across the first, second, and fourth IMS runs. The main quantitative claims in this report remain anchored on C-MAPSS because it provides official train/test splits, but the project now shows results for all local dataset sources available in the repository.
+The IMS pipeline uses extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the reported IMS results use stratified validation instead. Under that evaluation setup, the adaptive model performed strongly across the first, second, and fourth IMS runs. The main quantitative claims remain anchored on C-MAPSS because it provides official train/test splits, while IMS serves as a complementary secondary benchmark.

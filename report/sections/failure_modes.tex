@@ -1,8 +1,8 @@
 \section{Failure Modes and Action Mapping}
-Predictive maintenance is only useful if the final output is actionable. The report should therefore distinguish between model failure, label ambiguity, and decision-policy mismatch. A model may classify a window correctly while still recommending the wrong service action if the action mapping is too coarse, and that distinction needs to be visible in the analysis.
+Predictive maintenance is only useful if the final output is actionable. The analysis therefore distinguishes among model failure, label ambiguity, and decision-policy mismatch. A model may classify a window correctly while still recommending the wrong service action if the action mapping is too coarse, and that distinction must remain visible.
 
 \subsection{Health-to-Action Mapping}
-The project will use a simple maintenance policy during the first pass:
+The experiments use a simple maintenance policy:
 \begin{itemize}
     \item ``Normal'' means monitor and continue routine operation.
     \item ``Warning'' means inspect soon and review recent trend changes.
@@ -11,7 +11,7 @@ The project will use a simple maintenance policy during the first pass:
 This mapping is intentionally conservative. It is easier to justify a cautious recommendation in a maintenance context than to recover from a missed critical failure.
 
 \subsection{Interpretability and Diagnostics}
-The final report should include at least one example from each of the following categories: a clean early exit, a borderline case that uses more loop steps, and a failure case where the model is overconfident. These examples will make the adaptive-depth story concrete and will help show whether extra compute is being spent on genuinely ambiguous inputs.
+Three qualitative example types are especially important: a clean early exit, a borderline case that uses more loop steps, and a failure case where the model is overconfident. These examples make the adaptive-depth behavior concrete and help show whether extra compute is being spent on genuinely ambiguous inputs.
 
 \subsection{Generalization Questions}
-The most interesting open question is whether the adaptive loop learned on C-MAPSS transfers to IMS without collapsing into dataset-specific heuristics. If transfer degrades, the report should note whether the failure is in the encoder, the loop block, or the exit gate. If transfer succeeds, that strengthens the claim that the model is learning a reusable maintenance reasoning policy rather than memorizing one benchmark.
+The most interesting open question is whether the adaptive loop learned on C-MAPSS transfers to IMS without collapsing into dataset-specific heuristics. If transfer degrades, the failure analysis should distinguish whether the problem arises in the encoder, the loop block, or the exit gate. If transfer succeeds, that strengthens the claim that the model is learning a reusable maintenance reasoning policy rather than memorizing one benchmark.

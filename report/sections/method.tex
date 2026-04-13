@@ -15,10 +15,10 @@ h_{k+1} = f_{\theta}(h_k, c)
 p_{\text{exit}}^{(k)} = \max \left(\text{softmax}(g(h_k))\right)
 \end{equation}
 
-The loop is unrolled until the confidence threshold is satisfied or a maximum depth is reached. This structure makes compute usage data-dependent rather than fixed, which is central to the project hypothesis. The looped reasoning framing is also aligned with the current generation of latent reasoning models, which treat repeated internal computation as a mechanism for stronger knowledge manipulation rather than simply larger parameter counts \cite{Zhu2025Ouro}.
+The loop is unrolled until the confidence threshold is satisfied or a maximum depth is reached. This structure makes compute usage data-dependent rather than fixed, which is central to the main hypothesis. The looped reasoning framing is also aligned with the current generation of latent reasoning models, which treat repeated internal computation as a mechanism for stronger knowledge manipulation rather than simply larger parameter counts \cite{Zhu2025Ouro}.
 
 \subsection{Baselines}
-The report should compare the adaptive looped model against a direct MLP or CNN classifier, a recurrent baseline such as GRU or LSTM, and a fixed-depth version of the looped model. Those comparisons isolate the value of recurrence and the value of adaptive early exit separately.
+The evaluation compares the adaptive looped model against a direct GRU-based baseline and a fixed-depth version of the same looped architecture. These comparisons isolate the value of recurrence and the value of adaptive early exit separately while keeping the encoder and hidden size controlled.
 
 \subsection{Implementation Notes}
-The current implementation uses a GRU encoder with hidden size 128, AdamW optimization, and a maximum loop depth of six steps. The adaptive model halts when the classifier confidence exceeds 0.8. The pipeline records average depth per example, validation and test confusion matrices, and full metric reports for each run.
+The implementation uses a GRU encoder with hidden size 128, AdamW optimization, and a maximum loop depth of six steps. The adaptive model halts when the classifier confidence exceeds 0.8. The pipeline records average depth per example, latency benchmarks, validation and test confusion matrices, and full metric reports for each run.

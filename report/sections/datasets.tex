@@ -1,10 +1,10 @@
 \section{Datasets}
-Two datasets define the initial scope of the project. C-MAPSS is the primary supervised benchmark for remaining useful life and health-state prediction, while IMS bearings serves as a complementary run-to-failure dataset for anomaly detection and degradation-stage analysis.
+Two datasets define the empirical scope of this study. C-MAPSS is the primary supervised benchmark for remaining useful life and health-state prediction, while IMS bearings serves as a complementary run-to-failure dataset for anomaly detection and degradation-stage analysis.
 
 \subsection{C-MAPSS}
 The C-MAPSS turbofan simulation data provide multivariate time series recorded under multiple operating conditions and fault modes \cite{Saxena2008CMAPSS}. Each trajectory follows an engine from healthy operation to failure, making it suitable for supervised prognostics. The dataset is widely used in prognostic benchmarking because it supports several failure prediction formulations, including direct RUL regression and classification via thresholded remaining life \cite{Ramasso2014CMAPSS}.
 
-For this project, the training protocol uses rolling windows of sensor data and derives labels from remaining useful life thresholds to produce ``normal,'' ``warning,'' and ``critical'' classes. Windows use length 32 and stride 8. Thresholds are set to RUL $> 50$ for normal, $15 < \text{RUL} \leq 50$ for warning, and $\text{RUL} \leq 15$ for critical.
+The training protocol uses rolling windows of sensor data and derives labels from remaining useful life thresholds to produce ``normal,'' ``warning,'' and ``critical'' classes. Windows use length 32 and stride 8. Thresholds are set to RUL $> 50$ for normal, $15 < \text{RUL} \leq 50$ for warning, and $\text{RUL} \leq 15$ for critical.
 
 \subsection{IMS Bearings}
 The IMS bearing dataset contains high-frequency vibration snapshots from run-to-failure experiments on rotating bearings \cite{NASAIMSBearings}. The data are stored as timestamped ASCII files and do not ship with explicit health labels, so labels must be derived from time ordering and the failure endpoint. This makes IMS useful for anomaly detection, degradation staging, and transfer testing.
