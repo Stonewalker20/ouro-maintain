@@ -1,6 +1,6 @@
 \section{Motivation}
 
-\begin{frame}{Why Predictive Maintenance}
+\begin{frame}{Problem Statement}
   \begin{itemize}
     \item Reduce unplanned downtime by detecting degradation early.
     \item Prioritize maintenance by urgency instead of reacting to failures.
@@ -9,11 +9,11 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Project Goal}
+\begin{frame}{Why This Matters}
   \begin{itemize}
     \item Input: rolling telemetry windows plus maintenance context.
     \item Output: \texttt{normal}, \texttt{warning}, or \texttt{critical}.
     \item Secondary output: suggested maintenance action.
-    \item Core question: does adaptive loop depth improve triage quality at lower average compute?
+    \item Core question: can a looped model beat an LLM baseline on maintenance triage at lower average compute?
   \end{itemize}
 \end{frame}

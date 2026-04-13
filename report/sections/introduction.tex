@@ -1,4 +1,5 @@
 \section{Introduction}
+\subsection{Problem Statement}
 Predictive maintenance systems aim to detect degradation early enough to reduce downtime, avoid secondary damage, and schedule service before failure. In practice, the core challenge is not just classification accuracy, but making good decisions under limited compute, noisy telemetry, and incomplete operational context. Benchmark datasets such as C-MAPSS have made this problem concrete for RUL-style forecasting, but they also expose the limits of one-pass prediction when failure evidence accumulates gradually \cite{Saxena2008CMAPSS,Ramasso2014CMAPSS}.
 
 That setting matches the strengths of looped latent reasoning: the model can refine an internal state iteratively and stop early when the evidence is already clear. Methods such as adaptive computation time and recurrent latent refinement show that depth itself can be a learned resource rather than a fixed architectural constant \cite{Graves2016ACT,Dehghani2018UniversalTransformers,Zhu2025Ouro}.
@@ -6,6 +7,9 @@ That setting matches the strengths of looped latent reasoning: the model can ref
 This work studies whether an adaptive looped architecture can improve maintenance triage on sequential industrial sensor data. The central hypothesis is that recurrent latent computation with learned depth allocation will produce better calibration and compute-efficiency tradeoffs than fixed-depth baselines on difficult failure windows, while remaining competitive on easier cases. IMS is included as a secondary benchmark because it stresses a slightly different failure regime based on vibration snapshots rather than engine telemetry \cite{NASAIMSBearings}.
 
 The paper makes three contributions. First, it defines a predictive-maintenance formulation that maps sensor windows to health state, urgency, and recommended action. Second, it proposes an Ouro-inspired model with shared iterative computation and early exit. Third, it establishes an evaluation protocol spanning classification quality, compute use, and maintenance utility.
+
+\subsection{Why It Matters}
+For this project, the central research question is whether a looped transformer-style latent reasoning system can outperform a pretrained LLM baseline on maintenance triage while using less inference compute. That comparison matters because many current AI workflows default to generic language-model pipelines even when the underlying data are numeric sensor streams.
 
 \subsection{Contributions}
 \begin{itemize}

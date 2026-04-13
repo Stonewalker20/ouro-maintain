@@ -1,6 +1,9 @@
 \section{Discussion}
 The results are most meaningful when interpreted in practical maintenance terms rather than only as aggregate ML metrics. In that framing, the strongest outcome is that the adaptive looped model preserves useful recall on critical failures while reducing average internal depth on routine windows. This behavior supports the claim that iterative latent reasoning is useful for maintenance triage, where most cases are straightforward but a small subset requires deeper inspection.
 
+\subsection{Broader Impact and Future Work}
+This project suggests that maintenance-oriented AI systems do not necessarily benefit from routing numeric telemetry through generic text-first LLM pipelines. A task-specific looped model can deliver better class-balanced performance and much lower latency while remaining easier to interpret in operational terms. More broadly, the work supports the idea that adaptive internal computation is valuable when decisions involve uneven difficulty across examples.
+
 \subsection{Threats to Validity}
 The main threats are dataset bias, label construction choices, and split leakage. C-MAPSS thresholds can materially change class balance, while IMS labels are derived rather than observed directly. Cross-dataset comparisons therefore provide evidence of generalization behavior rather than a perfect apples-to-apples comparison of supervisory signal.
 

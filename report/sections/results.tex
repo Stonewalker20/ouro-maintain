@@ -1,4 +1,5 @@
 \section{Results}
+\subsection{Results and Demo}
 The primary quantitative results come from C-MAPSS FD001. The adaptive looped model produced the strongest macro F1 score on the held-out test set while using far fewer internal steps than the fixed-depth loop and far lower latency than the text-serialized LLM baseline.
 
 \subsection{Primary Findings}
@@ -59,3 +60,6 @@ On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, w
 
 \subsection{Secondary Dataset Status}
 The IMS pipeline uses extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the reported IMS results use stratified validation instead. Under that evaluation setup, the adaptive model performed strongly across the first, second, and fourth IMS runs. The main quantitative claims remain anchored on C-MAPSS because it provides official train/test splits, while IMS serves as a complementary secondary benchmark.
+
+\subsection{Demo Deliverable}
+The completed system includes a Streamlit dashboard for live presentation use. The dashboard loads saved artifacts, displays benchmark comparisons, renders confusion matrices and training curves, and lets a user inspect individual telemetry windows with predicted health state, maintenance action, subsystem attribution, confidence, latency, and adaptive exit depth. That demo makes the quantitative comparison tangible by showing how the model behaves on specific examples instead of only aggregate tables.

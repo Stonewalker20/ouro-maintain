@@ -2,6 +2,9 @@
 \subsection{Problem Formulation}
 Given a telemetry window $x_{1:T}$ and optional context $c$, the model predicts a health state $y \in \{\text{normal}, \text{warning}, \text{critical}\}$, an optional fault or subsystem label, and a maintenance action. The architecture is designed so that the same latent reasoning block can be applied repeatedly before producing a final decision.
 
+\subsection{Your Solution}
+The proposed solution is an adaptive looped reasoning model for predictive maintenance. Instead of making a single forward-pass decision, the model encodes a telemetry window into a latent state, repeatedly refines that state with a shared recurrent block, and uses a learned exit rule to decide when enough internal computation has been used. This is paired with multitask heads for health state, maintenance action, and subsystem attribution so the system produces operationally meaningful outputs rather than only a class label.
+
 \subsection{Architecture}
 The model has three stages. A window encoder maps raw sensor inputs to a latent representation. A shared loop block refines that latent state through repeated updates. A confidence-based exit policy decides whether additional internal steps are needed. The final state feeds task-specific heads for classification and action selection. The design borrows the core idea of adaptive halting from adaptive computation time and the repeated refinement pattern from latent recurrence models \cite{Graves2016ACT,Dehghani2018UniversalTransformers,Banino2021PonderNet}.
 
