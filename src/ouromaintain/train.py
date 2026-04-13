@@ -340,6 +340,7 @@ def main() -> None:
         classification_report(
             val_targets,
             val_preds,
+            labels=[0, 1, 2],
             target_names=LABEL_NAMES,
             digits=4,
             zero_division=0,
@@ -359,6 +360,7 @@ def main() -> None:
             classification_report(
                 test_targets,
                 test_preds,
+                labels=[0, 1, 2],
                 target_names=LABEL_NAMES,
                 digits=4,
                 zero_division=0,

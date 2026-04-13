@@ -106,11 +106,9 @@ pyproject.toml
 Create an environment and install dependencies:
 
 ```bash
-.venv/bin/python -m pip install -r requirements.txt
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-pip install -e .
 ```
 
 Run the CMAPSS experiment:
@@ -152,6 +150,35 @@ Each run writes artifacts to the selected output directory:
 - `validation_classification_report.txt`
 - `validation_confusion_matrix.json`
 - `test_metrics.json` for datasets with a held-out official test split
+
+## Current results
+
+The primary completed benchmark is C-MAPSS FD001. The best run is the adaptive loop:
+
+- baseline test macro F1: `0.8609`
+- fixed-loop test macro F1: `0.8891`
+- adaptive-loop test macro F1: `0.9183`
+- adaptive average test depth: `1.21` versus `6.0` for the fixed loop
+
+See [docs/results-summary.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/results-summary.md:1) for the tracked metric table.
+
+## Dashboard
+
+Run the Streamlit app from the repo root:
+
+```bash
+source .venv/bin/activate
+streamlit run dashboard/app.py
+```
+
+The dashboard source and usage notes live in [dashboard/README.md](/Users/cordellstonecipher/Projects/LoopedLM/dashboard/README.md:1).
+
+## Report and slides
+
+Compiled deliverables:
+
+- IEEE report: [report/main.pdf](/Users/cordellstonecipher/Projects/LoopedLM/report/main.pdf)
+- slide deck: [slides/main.pdf](/Users/cordellstonecipher/Projects/LoopedLM/slides/main.pdf)
 
 ## First milestone
 

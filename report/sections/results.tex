@@ -9,8 +9,29 @@ The primary quantitative results come from C-MAPSS FD001. The adaptive looped mo
     \item The adaptive model preserved strong critical-class performance, reaching perfect precision and 0.75 recall on the small critical test subset.
 \end{itemize}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/cmapss_comparison.png}
+\caption{Primary C-MAPSS FD001 comparison. The adaptive loop achieves the best macro F1 score while using far less average loop depth than the fixed-depth recurrent model.}
+\label{fig:cmapss-comparison}
+\end{figure}
+
 \subsection{Validation and Generalization}
 On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. This pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/adaptive_history.png}
+\caption{Adaptive model learning curve on C-MAPSS FD001. Validation macro F1 improves while average validation depth decreases over training, indicating that the model becomes both stronger and cheaper.}
+\label{fig:adaptive-history}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/adaptive_confusion.png}
+\caption{Adaptive model confusion matrix on the C-MAPSS FD001 test set. Most residual errors occur between normal and warning states rather than catastrophic confusion across all classes.}
+\label{fig:adaptive-confusion}
+\end{figure}
+
 \subsection{Secondary Dataset Status}
-The IMS pipeline is implemented with extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Initial exploratory runs showed that IMS is substantially harder to evaluate with a strict temporal split because label distributions shift sharply late in the run and some splits omit one of the three health classes. For this reason, the main quantitative claims in this report are anchored on C-MAPSS, while IMS is treated as an implemented secondary path for future robustness analysis rather than a mature benchmark.
+The IMS pipeline is implemented with extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Exploratory temporal-split runs on the first IMS test showed that the validation segment can contain only warning and critical windows, with no normal class present. Under that split, both the baseline and adaptive models reached only about 0.13 macro F1 on validation, which is more useful as a demonstration of dataset difficulty than as a stable benchmark. For this reason, the main quantitative claims in this report are anchored on C-MAPSS, while IMS is treated as an implemented secondary path for future robustness analysis rather than a mature benchmark.

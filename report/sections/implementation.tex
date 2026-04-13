@@ -1,15 +1,15 @@
 \section{Implementation}
 \subsection{Windowing and Labeling}
-The training pipeline converts each asset trajectory into overlapping windows with a fixed history length and stride. Each window is labeled using the terminal sensor state or remaining-life estimate associated with the end of the window. For C-MAPSS, the label mapping should be parameterized so that the report can compare conservative and aggressive warning thresholds. For IMS, label construction should be documented explicitly because it is derived from run ordering and failure proximity rather than shipped supervision.
+The training pipeline converts each asset trajectory into overlapping windows with a fixed history length and stride. For the primary C-MAPSS FD001 experiment, windows use length 32 and stride 8. Each window receives the class label associated with its final timestep, where RUL thresholding maps engine state to normal, warning, and critical categories. For IMS, label construction is derived from run ordering and failure proximity rather than shipped supervision, so the implementation caches summary-statistic features to keep repeated exploratory runs tractable.
 
 \subsection{Model Variants}
-Three model families belong in the final experiment table. The first is a standard direct baseline that maps features to classes in one pass. The second is a fixed-depth recurrent model that repeats the same latent transformation a constant number of times. The third is the adaptive model, which adds a learned exit gate so that the number of latent refinements depends on the input.
+Three model families are implemented in the codebase. The first is a direct GRU-based baseline that maps each telemetry window to a class prediction in one pass. The second is a fixed-depth recurrent model that repeats the same latent transformation for six steps. The third is the adaptive model, which reuses the same latent block but exits once the classifier confidence crosses a threshold of 0.8.
 
 \subsection{Training Recipe}
-The final report should list the optimizer, learning-rate schedule, batch size, window size, maximum loop depth, and early-exit threshold. If the implementation uses class weighting or focal loss to stabilize critical-failure recall, that choice should be justified here. The same section should also record random-seed policy and any data augmentation used for the vibration signals.
+All primary runs use AdamW with learning rate $10^{-3}$, weight decay $10^{-4}$, hidden size 128, batch size 128, and six training epochs. The code standardizes features using training-set statistics and stores those normalization parameters with each checkpoint. Validation splits are created at the asset level for C-MAPSS so that windows from the same engine do not appear in both training and validation sets. No class weighting or data augmentation was used in the current results, which makes the adaptive-compute comparison easier to interpret.
 
 \subsection{Evaluation Pipeline}
-Evaluation should run on a held-out test set with frozen thresholds. Reported metrics should be aggregated over multiple runs if the training procedure has variance. For the adaptive model, every example should emit both a prediction and a depth statistic so that correctness and compute use can be analyzed together.
+Evaluation runs on a held-out test set with frozen thresholds. For the adaptive model, every example emits both a class prediction and a depth statistic so that correctness and compute use can be analyzed together. The code writes metric summaries, confusion matrices, full classification reports, and training-history CSV files to an artifact directory for each run.
 
 \begin{algorithm}[t]
 \caption{Adaptive looped maintenance inference}
@@ -18,7 +18,7 @@ Evaluation should run on a held-out test set with frozen thresholds. Reported me
 \STATE Encode input window into latent state $h_0$
 \FOR{$k = 0$ to $K-1$}
     \STATE Update latent state $h_{k+1} \leftarrow f_\theta(h_k, c)$
-    \STATE Compute exit probability $p_{\text{exit}}^{(k)}$
+    \STATE Compute class confidence $p_{\text{exit}}^{(k)}$
     \IF{$p_{\text{exit}}^{(k)}$ exceeds threshold}
         \STATE Break and emit final prediction
     \ENDIF

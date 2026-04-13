@@ -1,5 +1,7 @@
 .DS_Store
 .pycache_local/
+.mplconfig/
+.cache_local/
 __pycache__/
 *.pyc
 .venv/

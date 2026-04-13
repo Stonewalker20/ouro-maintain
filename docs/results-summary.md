@@ -35,4 +35,17 @@ The adaptive loop achieved the best test macro F1 while reducing average loop co
 
 ## IMS
 
-The IMS preprocessing and training path is implemented, including extraction, statistical feature generation, caching, and temporal-split evaluation. Initial exploratory runs surfaced class-presence issues in temporal validation splits, so the main quantitative claims currently remain anchored on C-MAPSS.
+The IMS preprocessing and training path is implemented, including extraction, statistical feature generation, caching, and temporal-split evaluation.
+
+Exploratory validation results on `1st_test`:
+
+| Model | Split | Accuracy | Macro F1 | Avg. Depth |
+|---|---|---:|---:|---:|
+| Baseline | validation | 0.2500 | 0.1333 | 0.00 |
+| Adaptive | validation | 0.2500 | 0.1374 | 1.56 |
+
+Interpretation:
+
+- the temporal validation segment contains only `warning` and `critical` windows
+- there are no `normal` examples in that split
+- IMS is currently better treated as an exploratory secondary dataset than a stable headline benchmark
