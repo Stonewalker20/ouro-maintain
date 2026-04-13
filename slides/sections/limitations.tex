@@ -3,8 +3,8 @@
 \begin{frame}{Current Limitations}
   \begin{itemize}
     \item CMAPSS is simulated telemetry, not a live maintenance deployment stream.
-    \item IMS labels are implicit and temporal splits can omit one health class.
-    \item The current system predicts health state only; action labels are still heuristic.
-    \item Compute is measured by loop depth, not full latency profiling.
+    \item IMS labels are still derived rather than ground-truth maintenance annotations.
+    \item Action and subsystem targets are coarse supervisory proxies, not technician-authored labels.
+    \item Latency is now benchmarked explicitly, but current numbers are local-device measurements rather than deployment SLAs.
   \end{itemize}
 \end{frame}

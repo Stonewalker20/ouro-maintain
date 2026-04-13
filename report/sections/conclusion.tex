@@ -2,4 +2,4 @@
 OuroMaintain demonstrates that adaptive latent looping is a credible predictive-maintenance strategy on C-MAPSS. The strongest result in this implementation is that the adaptive model improved test macro F1 over both the direct baseline and the fixed-depth loop while using far less recurrent compute than the fixed-depth alternative. In practical maintenance terms, this means the system can reserve deeper internal reasoning for harder windows without paying the full compute cost on routine cases.
 
 \subsection{Future Work}
-Likely next steps include stabilizing the IMS evaluation protocol, adding more maintenance datasets, turning the evaluation into a multitask setup with fault localization and action prediction, and integrating the model into a small dashboard for inspection and triage.
+The current codebase already includes stage-aware IMS validation, multitask heads for maintenance action and subsystem attribution, explicit latency benchmarking, and a presentation-ready dashboard bundle. The next round of work should therefore focus on stronger supervisory signals, broader maintenance datasets, and tighter integration with real operating workflows.
