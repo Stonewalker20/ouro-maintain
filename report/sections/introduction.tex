@@ -11,8 +11,8 @@ The paper makes three contributions. First, it defines a predictive-maintenance 
 \begin{itemize}
     \item A maintenance-oriented reformulation of looped reasoning for health monitoring and triage.
     \item A reproducible architecture that separates window encoding, latent recurrence, and adaptive exit.
-    \item A benchmarking plan using C-MAPSS and IMS to compare fixed-depth and adaptive-depth models.
+    \item A completed benchmark suite using C-MAPSS and IMS to compare direct, fixed-depth, adaptive, and LLM-based alternatives.
 \end{itemize}
 
 \subsection{Scope}
-This scaffold is intentionally written for a five-page-or-longer IEEE conference-style report. The experimental sections are structured so results, plots, and tables can be filled in after training is complete.
+The empirical core of the paper is the C-MAPSS benchmark suite, where FD001 serves as the full comparison point against direct, fixed-depth, adaptive, and text-serialized LLM baselines, and FD002--FD004 extend the adaptive model across additional official test splits. IMS is reported as a secondary benchmark with stratified validation because its labels are derived from failure progression rather than provided directly.

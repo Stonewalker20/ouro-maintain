@@ -4,10 +4,10 @@ The results are most meaningful when interpreted in practical maintenance terms 
 \subsection{Threats to Validity}
 The main threats are dataset bias, label construction choices, and split leakage. C-MAPSS thresholds can materially change class balance, while IMS labels are derived rather than observed directly. Cross-dataset comparisons therefore provide evidence of generalization behavior rather than a perfect apples-to-apples comparison of supervisory signal.
 
-\subsection{Interpretation Checklist}
+\subsection{Observed Patterns}
 \begin{itemize}
-    \item Check whether hard cases consistently consume more loop steps than easy cases.
-    \item Check whether depth savings come from true early exits rather than overconfident misclassifications.
-    \item Check whether the adaptive model stays calibrated under class imbalance.
-    \item Check whether C-MAPSS and IMS agree on the same qualitative degradation patterns.
+    \item On C-MAPSS FD001, hard windows did consume more average loop depth than easy windows, while the overall test average remained low at 1.21 steps.
+    \item Depth savings did not come purely from overconfident collapsing behavior: the adaptive model improved macro F1 over both the direct and fixed-depth recurrent baselines on the official test split.
+    \item The largest residual error mode remained confusion between normal and warning states rather than catastrophic collapse across all classes.
+    \item IMS followed the same qualitative pattern as C-MAPSS in the sense that adaptive looping remained effective under a different sensing modality, although the weaker supervision on IMS makes those results more exploratory.
 \end{itemize}
