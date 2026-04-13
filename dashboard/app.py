@@ -74,6 +74,8 @@ def parse_slug(slug: str) -> tuple[str, str, str]:
         return dataset, slug[len(dataset) + 1 : -len("_adaptive_v2")], "adaptive_v2"
     if slug.endswith("_adaptive"):
         return dataset, slug[len(dataset) + 1 : -len("_adaptive")], "adaptive"
+    if slug.endswith("_llm"):
+        return dataset, slug[len(dataset) + 1 : -len("_llm")], "llm"
     if slug.endswith("_fixed"):
         return dataset, slug[len(dataset) + 1 : -len("_fixed")], "fixed"
     if slug.endswith("_baseline"):
@@ -182,6 +184,8 @@ def figure_to_array(fig: plt.Figure) -> np.ndarray:
 def model_kind_from_slug(slug: str) -> str:
     if "adaptive" in slug:
         return "adaptive"
+    if "llm" in slug:
+        return "llm"
     if "fixed" in slug:
         return "fixed"
     return "baseline"
@@ -243,17 +247,28 @@ def render_metric_cards(records: list[ArtifactRecord], sample_bundle: dict[str, 
     adaptive = lookup.get("cmapss_fd001_adaptive")
     fixed = lookup.get("cmapss_fd001_fixed")
     baseline = lookup.get("cmapss_fd001_baseline")
+    llm = lookup.get("cmapss_fd001_llm")
     cols = st.columns(4)
     if adaptive and fixed and baseline:
         test_adaptive = adaptive.metrics.get("test", {})
         test_fixed = fixed.metrics.get("test", {})
         test_baseline = baseline.metrics.get("test", {})
+        test_llm = llm.metrics.get("test", {}) if llm else {}
         speedup = 1.0 - float(test_adaptive.get("avg_steps", 0.0)) / max(float(test_fixed.get("avg_steps", 1.0)), 1e-8)
-        f1_gain = float(test_adaptive.get("macro_f1", 0.0)) - float(test_fixed.get("macro_f1", 0.0))
+        f1_gain_vs_fixed = float(test_adaptive.get("macro_f1", 0.0)) - float(test_fixed.get("macro_f1", 0.0))
         latency = float(test_adaptive.get("avg_sample_latency_ms", float("nan")))
+        if llm:
+            llm_latency = float(test_llm.get("avg_sample_latency_ms", float("nan")))
+            latency_gain = llm_latency / max(latency, 1e-8) if not np.isnan(llm_latency) and not np.isnan(latency) else float("nan")
+            f1_gain_vs_llm = float(test_adaptive.get("macro_f1", 0.0)) - float(test_llm.get("macro_f1", 0.0))
+            cols[0].metric("Adaptive test macro F1", pretty_metric(float(test_adaptive.get("macro_f1", float("nan")))))
+            cols[1].metric("Macro F1 lift vs LLM", f"{f1_gain_vs_llm:+.4f}")
+            cols[2].metric("Latency advantage vs LLM", f"{latency_gain:.1f}x" if not np.isnan(latency_gain) else "n/a")
+            cols[3].metric("Depth reduction vs fixed", f"{speedup * 100:.1f}%")
+            return
         cols[0].metric("Adaptive test macro F1", pretty_metric(float(test_adaptive.get("macro_f1", float("nan")))))
         cols[1].metric("Depth reduction vs fixed", f"{speedup * 100:.1f}%")
-        cols[2].metric("Macro F1 lift vs fixed", f"{f1_gain:+.4f}")
+        cols[2].metric("Macro F1 lift vs fixed", f"{f1_gain_vs_fixed:+.4f}")
         cols[3].metric("Latency", pretty_latency(latency))
         return
 

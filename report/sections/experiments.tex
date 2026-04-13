@@ -1,6 +1,6 @@
 \section{Experiments}
 \subsection{Experimental Protocol}
-All reported primary results use C-MAPSS FD001. Training uses the official run-to-failure trajectories, validation uses an engine-level held-out split from the training set, and testing uses the official FD001 test split with its published RUL labels. Each model is trained for six epochs with batch size 128, hidden size 128, and a maximum loop depth of six steps. The adaptive model uses the same backbone as the fixed-depth loop and differs only in the early-exit policy. The current codebase also supports multitask supervision for maintenance action prediction and coarse subsystem attribution, along with stage-aware temporal validation for IMS.
+All reported primary results use C-MAPSS FD001. Training uses the official run-to-failure trajectories, validation uses an engine-level held-out split from the training set, and testing uses the official FD001 test split with its published RUL labels. The recurrent baselines use batch size 128, hidden size 128, and a maximum loop depth of six steps. The adaptive model uses the same backbone as the fixed-depth loop and differs only in the early-exit policy. The LLM comparison uses a pretrained DistilBERT encoder over compact text summaries of the same telemetry windows. The codebase also supports multitask supervision for maintenance action prediction and coarse subsystem attribution, along with stage-aware temporal validation for IMS.
 
 \subsection{Metrics}
 Classification results are reported with accuracy, macro F1, and weighted F1. Maintenance-specific reporting emphasizes critical-failure recall, action accuracy, subsystem accuracy, average loop depth, and measured latency in milliseconds per sample. Loop depth remains useful as an internal compute proxy, but the implementation now writes explicit latency benchmarks for validation and test artifacts as well.
@@ -15,13 +15,14 @@ The evaluation focuses on the core comparison between direct prediction, fixed-d
 \label{tab:results-main}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Model & Accuracy & Macro F1 & Avg. depth & Max depth \\
+Model & Accuracy & Macro F1 & Avg. depth & Latency (ms) \\
 \midrule
-Direct baseline & 0.9746 & 0.8609 & 0.0 & 0 \\
-Fixed-depth loop & 0.9877 & 0.8891 & 6.0 & 6 \\
-Adaptive looped model & 0.9838 & 0.9183 & 1.21 & 6 \\
+Direct baseline & 0.9746 & 0.8609 & 0.00 & n/a \\
+Fixed-depth loop & 0.9877 & 0.8891 & 6.00 & n/a \\
+Adaptive looped model & 0.9838 & 0.9183 & 1.21 & 0.17 \\
+Text-serialized LLM baseline & 0.9136 & 0.3183 & 0.00 & 16.95 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The main outcome is that adaptive looping improves macro F1 by 2.9 points over the fixed-depth loop while using only about 20.2\% of the fixed loop's average depth budget. This corresponds to an approximate 79.8\% reduction in loop computation relative to the fixed-depth recurrent baseline.
+The main outcome is that adaptive looping improves macro F1 by 2.9 points over the fixed-depth loop while using only about 20.2\% of the fixed loop's average depth budget. Relative to the text-serialized LLM baseline, the adaptive model improves macro F1 by roughly 60 points while reducing measured CPU latency from 16.95\,ms/sample to 0.17\,ms/sample. This corresponds to an approximate 79.8\% reduction in loop computation relative to the fixed-depth recurrent baseline and roughly a 101x latency advantage over the LLM baseline.

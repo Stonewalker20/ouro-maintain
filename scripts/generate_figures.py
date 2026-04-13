@@ -49,6 +49,7 @@ def metric_comparison() -> None:
         ("Baseline", "cmapss_fd001_baseline"),
         ("Fixed loop", "cmapss_fd001_fixed"),
         ("Adaptive loop", "cmapss_fd001_adaptive"),
+        ("LLM baseline", "cmapss_fd001_llm"),
     ]
     macro_f1 = [load_metrics(run, "test")["macro_f1"] for _, run in run_names]
     avg_depth = [load_metrics(run, "test")["avg_steps"] for _, run in run_names]
@@ -56,14 +57,14 @@ def metric_comparison() -> None:
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
-    axes[0].bar(labels, macro_f1, color=["#6C8EBF", "#D79B00", "#5C9E6E"])
+    axes[0].bar(labels, macro_f1, color=["#6C8EBF", "#D79B00", "#5C9E6E", "#B56576"])
     axes[0].set_ylim(0.0, 1.0)
     axes[0].set_ylabel("Macro F1")
     axes[0].set_title("C-MAPSS FD001 Test Macro F1")
     for idx, value in enumerate(macro_f1):
         axes[0].text(idx, value + 0.02, f"{value:.3f}", ha="center", fontsize=9)
 
-    axes[1].bar(labels, avg_depth, color=["#6C8EBF", "#D79B00", "#5C9E6E"])
+    axes[1].bar(labels, avg_depth, color=["#6C8EBF", "#D79B00", "#5C9E6E", "#B56576"])
     axes[1].set_ylabel("Average depth")
     axes[1].set_title("C-MAPSS FD001 Test Compute")
     for idx, value in enumerate(avg_depth):

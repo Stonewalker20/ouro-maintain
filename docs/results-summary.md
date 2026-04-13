@@ -13,11 +13,12 @@ Primary experiment settings:
 
 ### Test Metrics
 
-| Model | Accuracy | Macro F1 | Weighted F1 | Avg. Depth | Max Depth |
+| Model | Accuracy | Macro F1 | Weighted F1 | Avg. Depth | Latency (ms) |
 |---|---:|---:|---:|---:|---:|
-| Baseline | 0.9746 | 0.8609 | 0.9748 | 0.00 | 0 |
-| Fixed loop | 0.9877 | 0.8891 | 0.9876 | 6.00 | 6 |
-| Adaptive loop | 0.9838 | 0.9183 | 0.9842 | 1.21 | 6 |
+| Baseline | 0.9746 | 0.8609 | 0.9748 | 0.00 | n/a |
+| Fixed loop | 0.9877 | 0.8891 | 0.9876 | 6.00 | n/a |
+| Adaptive loop | 0.9838 | 0.9183 | 0.9842 | 1.21 | 0.17 |
+| LLM baseline | 0.9136 | 0.3183 | 0.8724 | 0.00 | 16.95 |
 
 ### Headline
 
@@ -32,6 +33,8 @@ The adaptive loop achieved the best test macro F1 while reducing average loop co
 - The fixed loop produced the best raw accuracy.
 - The adaptive loop produced the best class-balanced performance.
 - The adaptive policy appears to generalize better than fixed full-depth recurrence on the official test split.
+- The LLM baseline maintained strong nominal accuracy on the dominant class but failed on minority-state macro F1.
+- The adaptive loop was about `101x` faster per sample than the LLM baseline on CPU benchmarking.
 
 ## IMS
 

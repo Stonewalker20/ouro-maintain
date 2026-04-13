@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -15,6 +16,7 @@ CANONICAL_ARTIFACTS = {
     "cmapss_fd001_baseline",
     "cmapss_fd001_fixed",
     "cmapss_fd001_adaptive",
+    "cmapss_fd001_llm",
     "cmapss_fd002_adaptive",
     "cmapss_fd003_adaptive",
     "cmapss_fd004_adaptive",
@@ -57,6 +59,7 @@ def collect_rows() -> list[dict[str, object]]:
                     "weighted_f1": metrics.get("weighted_f1"),
                     "avg_steps": metrics.get("avg_steps"),
                     "max_steps": metrics.get("max_steps"),
+                    "avg_sample_latency_ms": metrics.get("avg_sample_latency_ms"),
                     "examples": metrics.get("num_examples"),
                 }
             )
@@ -68,18 +71,21 @@ def main() -> None:
     df = pd.DataFrame(rows).sort_values(["dataset", "run", "model", "split"]).reset_index(drop=True)
     OUTPUT_CSV.write_text(df.to_csv(index=False))
 
-    lines = ["# All Results", "", "| Dataset | Run | Model | Split | Accuracy | Macro F1 | Avg. Steps | Examples |", "|---|---|---|---|---:|---:|---:|---:|"]
+    lines = ["# All Results", "", "| Dataset | Run | Model | Split | Accuracy | Macro F1 | Avg. Steps | Latency (ms) | Examples |", "|---|---|---|---|---:|---:|---:|---:|---:|"]
     for row in df.itertuples(index=False):
+        latency = float(row.avg_sample_latency_ms) if row.avg_sample_latency_ms is not None else float("nan")
+        latency_text = f"{latency:.2f}" if not math.isnan(latency) else "n/a"
         lines.append(
             f"| {row.dataset} | {row.run} | {row.model} | {row.split} | "
-            f"{float(row.accuracy):.4f} | {float(row.macro_f1):.4f} | {float(row.avg_steps):.2f} | {int(row.examples)} |"
+            f"{float(row.accuracy):.4f} | {float(row.macro_f1):.4f} | {float(row.avg_steps):.2f} | "
+            f"{latency_text} | {int(row.examples)} |"
         )
     lines.extend(
         [
             "",
             "Canonical result set notes:",
             "",
-            "- `CMAPSS FD001` includes the baseline, fixed-depth, and adaptive comparison.",
+            "- `CMAPSS FD001` includes the baseline, fixed-depth, adaptive, and LLM comparison.",
             "- `CMAPSS FD002-FD004` report the adaptive model on the official test splits.",
             "- `IMS 1st_test`, `2nd_test`, and `4th_test/txt` report the adaptive model on stratified validation splits.",
             "- Earlier smoke runs and exploratory IMS artifacts are intentionally excluded from this final summary.",

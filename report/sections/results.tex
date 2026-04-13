@@ -1,11 +1,12 @@
 \section{Results}
-The primary quantitative results come from C-MAPSS FD001. The adaptive looped model produced the strongest macro F1 score on the held-out test set while using far fewer internal steps than the fixed-depth loop.
+The primary quantitative results come from C-MAPSS FD001. The adaptive looped model produced the strongest macro F1 score on the held-out test set while using far fewer internal steps than the fixed-depth loop and far lower latency than the text-serialized LLM baseline.
 
 \subsection{Primary Findings}
 \begin{itemize}
-    \item The adaptive model achieved test macro F1 of 0.9183, outperforming the fixed-depth loop at 0.8891 and the direct baseline at 0.8609.
+    \item The adaptive model achieved test macro F1 of 0.9183, outperforming the fixed-depth loop at 0.8891, the direct baseline at 0.8609, and the LLM baseline at 0.3183.
     \item The adaptive model required an average of only 1.21 recurrent steps on the test set, compared with 6.0 steps for the fixed-depth loop.
     \item Relative to the fixed-depth loop, the adaptive policy reduced average loop computation by approximately 79.8\%.
+    \item The adaptive model averaged 0.17 ms/sample on CPU latency benchmarking, compared with 16.95 ms/sample for the LLM baseline, or roughly a 101x latency advantage.
     \item The adaptive model preserved strong critical-class performance, reaching perfect precision and 0.75 recall on the small critical test subset.
 \end{itemize}
 
@@ -20,6 +21,7 @@ Table~\ref{tab:all-datasets} summarizes the canonical local benchmark matrix. C-
 \toprule
 Dataset & Split & Macro F1 & Avg. depth \\
 \midrule
+C-MAPSS FD001 LLM & Test & 0.3183 & 0.00 \\
 C-MAPSS FD001 adaptive & Test & 0.9183 & 1.21 \\
 C-MAPSS FD002 adaptive & Test & 0.9656 & 1.11 \\
 C-MAPSS FD003 adaptive & Test & 0.8300 & 1.20 \\
@@ -34,12 +36,12 @@ IMS 4th\_test/txt adaptive & Validation & 0.9417 & 1.51 \\
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/cmapss_comparison.png}
-\caption{Primary C-MAPSS FD001 comparison. The adaptive loop achieves the best macro F1 score while using far less average loop depth than the fixed-depth recurrent model.}
+\caption{Primary C-MAPSS FD001 comparison. The adaptive loop achieves the best macro F1 score while using far less average loop depth than the fixed-depth recurrent model and clearly outperforming the text-serialized LLM baseline.}
 \label{fig:cmapss-comparison}
 \end{figure}
 
 \subsection{Validation and Generalization}
-On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. This pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance.
+On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. The LLM baseline, despite strong nominal accuracy from the dominant normal class, collapsed on macro F1 because it failed to separate warning and critical states reliably. This is the central comparison of the project: the looped numeric model handled minority degradation states far better than the pretrained text-transformer baseline while also avoiding the heavy latency cost of tokenization and transformer inference. The pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance without paying the cost of text-serialized inference.
 
 \begin{figure}[t]
 \centering

@@ -25,7 +25,8 @@ The first version implements:
 2. A direct baseline classifier
 3. A fixed-depth looped model
 4. An adaptive early-exit looped model
-5. Training and evaluation utilities
+5. A pretrained text-transformer LLM baseline on serialized telemetry windows
+6. Training and evaluation utilities
 
 ## Planned labels
 
@@ -73,13 +74,13 @@ docs/
   experiment-plan.md
   datasets.md
 scripts/
-  download_datasets.sh
   extract_ims.sh
 src/ouromaintain/
   config.py
   data.py
   models.py
   train.py
+  train_llm.py
 requirements.txt
 pyproject.toml
 ```
@@ -134,6 +135,16 @@ python3 -m ouromaintain.train \
   --output-dir artifacts/ims_1st_test_adaptive
 ```
 
+Run the text-serialized LLM baseline:
+
+```bash
+python3 -m ouromaintain.train_llm \
+  --cmapss-root CMAPSSData \
+  --cmapss-subset FD001 \
+  --backbone distilbert-base-uncased \
+  --output-dir artifacts/cmapss_fd001_llm
+```
+
 Run the same trainer on a labeled CSV:
 
 ```bash
@@ -157,8 +168,10 @@ The primary completed benchmark is C-MAPSS FD001. The best run is the adaptive l
 
 - baseline test macro F1: `0.8609`
 - fixed-loop test macro F1: `0.8891`
+- LLM baseline test macro F1: `0.3183`
 - adaptive-loop test macro F1: `0.9183`
 - adaptive average test depth: `1.21` versus `6.0` for the fixed loop
+- LLM baseline average sample latency: `16.95 ms` versus `0.17 ms` for the adaptive model
 
 See [docs/results-summary.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/results-summary.md:1) for the tracked metric table.
 See [docs/all-results.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/all-results.md:1) for the full canonical local benchmark matrix across all completed local datasets.
