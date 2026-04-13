@@ -69,24 +69,9 @@ Current IMS framing in this repo:
 
 This makes IMS useful for a secondary degradation-stage experiment even without explicit label files.
 
-## Kaggle datasets
-
-The two Kaggle sources you listed are captured in `scripts/download_datasets.sh`.
-
-Prerequisites:
-
-- Kaggle CLI installed
-- `~/.kaggle/kaggle.json` configured
-
-Then run:
-
-```bash
-bash scripts/download_datasets.sh
-```
-
 ## Recommended order
 
 1. Train on `CMAPSSData/FD001`
 2. Compare baseline vs fixed loop vs adaptive loop
 3. Add IMS as a secondary run-to-failure benchmark
-4. Add one Kaggle dataset as an optional third domain
+4. Extend across `FD002`-`FD004` and the remaining IMS runs

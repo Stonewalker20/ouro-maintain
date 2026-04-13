@@ -4,8 +4,7 @@
   \begin{itemize}
     \item Primary benchmark: \texttt{CMAPSSData/FD001} with official train/test splits.
     \item Secondary benchmark path: \texttt{IMS/} for bearing degradation and fault progression.
-    \item Optional extension: Kaggle bearing dataset for additional fault-class coverage.
-    \item Optional extension: NASA anomaly detection dataset for transfer and generalization checks.
+    \item The project scope is intentionally limited to the two local dataset families in the repo.
   \end{itemize}
 \end{frame}
 
@@ -16,7 +15,6 @@
     \midrule
     CMAPSS & Standard supervised benchmark with official labels & Main experiment and final quantitative result \\
     IMS & Run-to-failure vibration data with implicit fault progression & Implemented secondary pipeline; harder temporal evaluation \\
-    Kaggle bearing set & Simple bearing fault patterns & Fast supplemental benchmark \\
     \bottomrule
   \end{tabular}
 \end{frame}

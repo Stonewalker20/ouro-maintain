@@ -193,10 +193,9 @@ The first defensible milestone is:
 
 ## Dataset notes
 
-This repo is now aligned to three candidate sources:
+This repo is now aligned to the two local dataset families used in the project:
 
 - `CMAPSSData/` for the first real experiment
-- `vinayak123tyagi/bearing-dataset` from Kaggle
-- `patrickfleith/nasa-anomaly-detection-dataset-smap-msl` from Kaggle
+- `IMS/` and `IMS_extracted/` for the bearing run-to-failure experiments
 
 Use [docs/datasets.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/datasets.md:1) for dataset-specific notes and commands.
