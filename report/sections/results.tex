@@ -1,6 +1,6 @@
 \section{Results}
 \subsection{Results and Demo}
-The primary quantitative results come from C-MAPSS FD001. The adaptive looped model produced the strongest macro F1 score on the held-out test set while using far fewer internal steps than the fixed-depth loop and far lower latency than the text-serialized LLM baseline.
+The primary quantitative results come from C-MAPSS FD001. The adaptive looped model produced the strongest macro F1 score on the held-out test set while using far fewer internal steps than the fixed-depth loop and far lower latency than both the frozen and task-adapted LLM baselines.
 
 \subsection{Primary Findings}
 \begin{itemize}
@@ -8,6 +8,7 @@ The primary quantitative results come from C-MAPSS FD001. The adaptive looped mo
     \item The adaptive model required an average of only 1.21 recurrent steps on the test set, compared with 6.0 steps for the fixed-depth loop.
     \item Relative to the fixed-depth loop, the adaptive policy reduced average loop computation by approximately 79.8\%.
     \item The adaptive model averaged 0.17 ms/sample on CPU latency benchmarking, compared with 16.95 ms/sample for the LLM baseline, or roughly a 101x latency advantage.
+    \item A stronger task-adapted DistilBERT baseline improved the LLM score to 0.3454 macro F1, but it still remained 0.5729 behind the adaptive loop and raised latency to 32.11 ms/sample.
     \item The adaptive model preserved strong critical-class performance, reaching perfect precision and 0.75 recall on the small critical test subset.
     \item Across the full local dataset matrix, the adaptive model outperformed the LLM baseline on every CMAPSS subset and all three IMS validation runs.
 \end{itemize}
@@ -50,7 +51,7 @@ IMS 4th\_test/txt & Adaptive & Validation & 0.9417 & n/a \\
 \end{figure}
 
 \subsection{Validation and Generalization}
-On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. The LLM baseline, despite strong nominal accuracy from the dominant normal class, collapsed on macro F1 because it failed to separate warning and critical states reliably. This is the central comparison of the project: the looped numeric model handled minority degradation states far better than the pretrained text-transformer baseline while also avoiding the heavy latency cost of tokenization and transformer inference. The pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance without paying the cost of text-serialized inference.
+On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. The frozen LLM baseline, despite strong nominal accuracy from the dominant normal class, collapsed on macro F1 because it failed to separate warning and critical states reliably. The stronger task-adapted LLM narrowed that gap only slightly, rising from 0.3183 to 0.3454 macro F1 on the FD001 test set. This is the central comparison of the project: the looped numeric model handled minority degradation states far better than both generic and task-adapted text-transformer baselines while also avoiding the heavy latency cost of tokenization and transformer inference. The pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance without paying the cost of text-serialized inference.
 
 \begin{figure}[t]
 \centering

@@ -32,6 +32,14 @@ def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
 
 
+def resolve_device() -> torch.device:
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+
 def task_payload(
     preds: np.ndarray,
     targets: np.ndarray,
@@ -179,18 +187,37 @@ class EmbeddedTelemetryDataset(Dataset[dict[str, torch.Tensor]]):
 
 
 class MultitaskLLMBaseline(nn.Module):
-    def __init__(self, backbone_name: str, freeze_backbone: bool = True) -> None:
+    def __init__(self, backbone_name: str, freeze_backbone: bool = True, trainable_layers: int = 0) -> None:
         super().__init__()
         self.backbone_name = backbone_name
         self.backbone = AutoModel.from_pretrained(backbone_name, local_files_only=True)
-        if freeze_backbone:
-            for param in self.backbone.parameters():
-                param.requires_grad = False
+        self.configure_backbone(freeze_backbone=freeze_backbone, trainable_layers=trainable_layers)
         hidden = getattr(self.backbone.config, "hidden_size", None) or getattr(self.backbone.config, "dim")
         self.dropout = nn.Dropout(0.1)
         self.health_head = nn.Linear(hidden, 3)
         self.action_head = nn.Linear(hidden, 4)
         self.subsystem_head = nn.Linear(hidden, 4)
+
+    def configure_backbone(self, freeze_backbone: bool, trainable_layers: int) -> None:
+        for param in self.backbone.parameters():
+            param.requires_grad = False
+        if freeze_backbone:
+            return
+        if trainable_layers <= 0:
+            for param in self.backbone.parameters():
+                param.requires_grad = True
+            return
+        encoder_layers = getattr(getattr(self.backbone, "transformer", None), "layer", None)
+        if encoder_layers is None:
+            for param in self.backbone.parameters():
+                param.requires_grad = True
+            return
+        for layer in encoder_layers[-trainable_layers:]:
+            for param in layer.parameters():
+                param.requires_grad = True
+        if hasattr(self.backbone, "pre_classifier"):
+            for param in self.backbone.pre_classifier.parameters():
+                param.requires_grad = True
 
     def pooled(self, outputs: Any) -> torch.Tensor:
         if hasattr(outputs, "pooler_output") and outputs.pooler_output is not None:
@@ -415,7 +442,9 @@ def save_history(output_dir: Path, history: list[dict[str, float]]) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Train an LLM baseline on text-serialized telemetry windows.")
+    parser = argparse.ArgumentParser(
+        description="Train a telemetry-text transformer baseline on serialized maintenance windows."
+    )
     parser.add_argument("--dataset", choices=["csv", "cmapss", "ims"], default="cmapss")
     parser.add_argument("--data-path")
     parser.add_argument("--cmapss-root", default="CMAPSSData")
@@ -432,12 +461,16 @@ def main() -> None:
     parser.add_argument("--max-length", type=int, default=256)
     parser.add_argument("--output-dir", default="artifacts/cmapss_fd001_llm")
     parser.add_argument("--latency-batches", type=int, default=16)
+    parser.add_argument("--trainable-layers", type=int, default=0)
     parser.add_argument(
         "--single-asset-split",
         choices=["temporal", "stratified", "stage_temporal"],
         default="temporal",
     )
-    parser.add_argument("--freeze-backbone", action="store_true", default=True)
+    freeze_group = parser.add_mutually_exclusive_group()
+    freeze_group.add_argument("--freeze-backbone", dest="freeze_backbone", action="store_true")
+    freeze_group.add_argument("--fine-tune-backbone", dest="freeze_backbone", action="store_false")
+    parser.set_defaults(freeze_backbone=True)
     args = parser.parse_args()
 
     data_config = DataConfig(window_size=args.window_size, stride=args.stride)
@@ -517,9 +550,16 @@ def main() -> None:
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False) if test_dataset is not None else None
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = MultitaskLLMBaseline(args.backbone, freeze_backbone=args.freeze_backbone).to(device)
-    print(f"model_ready device={device} freeze_backbone={args.freeze_backbone}", flush=True)
+    device = resolve_device()
+    model = MultitaskLLMBaseline(
+        args.backbone,
+        freeze_backbone=args.freeze_backbone,
+        trainable_layers=args.trainable_layers,
+    ).to(device)
+    print(
+        f"model_ready device={device} freeze_backbone={args.freeze_backbone} trainable_layers={args.trainable_layers}",
+        flush=True,
+    )
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate)
     health_criterion = nn.CrossEntropyLoss()
     action_criterion = nn.CrossEntropyLoss()

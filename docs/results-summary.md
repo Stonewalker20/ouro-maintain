@@ -19,6 +19,7 @@ Primary experiment settings:
 | Fixed loop | 0.9877 | 0.8891 | 0.9876 | 6.00 | n/a |
 | Adaptive loop | 0.9838 | 0.9183 | 0.9842 | 1.21 | 0.17 |
 | LLM baseline | 0.9136 | 0.3183 | 0.8724 | 0.00 | 16.95 |
+| Task-adapted LLM | 0.9098 | 0.3454 | 0.8774 | 0.00 | 32.11 |
 
 ### Headline
 
@@ -34,6 +35,7 @@ The adaptive loop achieved the best test macro F1 while reducing average loop co
 - The adaptive loop produced the best class-balanced performance.
 - The adaptive policy appears to generalize better than fixed full-depth recurrence on the official test split.
 - The LLM baseline maintained strong nominal accuracy on the dominant class but failed on minority-state macro F1.
+- A stronger task-adapted DistilBERT variant improved macro F1 from `0.3183` to `0.3454`, but it still trailed the adaptive loop by `0.5729`.
 - The adaptive loop was about `101x` faster per sample than the LLM baseline on CPU benchmarking.
 
 ### Full Matrix Comparison

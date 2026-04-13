@@ -3,8 +3,8 @@
 \begin{frame}{Results \& Demo}
   \begin{itemize}
     \item Built deliverables: trained benchmark suite, IEEE report, Streamlit dashboard, and presentation deck.
-    \item Main benchmark: C-MAPSS FD001 comparing baseline, fixed loop, adaptive loop, and LLM baseline.
-    \item Main quantitative claim: the adaptive loop beat the LLM baseline on both macro F1 and measured latency.
+    \item Main benchmark: C-MAPSS FD001 comparing baseline, fixed loop, adaptive loop, frozen LLM, and task-adapted LLM.
+    \item Main quantitative claim: the adaptive loop beat both the generic and task-adapted LLM baselines on macro F1 and latency.
     \item Live demo artifact: dashboard sample bundle with per-window predictions, maintenance actions, subsystem attribution, and adaptive depth traces.
   \end{itemize}
 \end{frame}
@@ -17,15 +17,16 @@
     Baseline & 0.9746 & 0.8609 & 0.00 & n/a \\
     Fixed loop & 0.9877 & 0.8891 & 6.00 & n/a \\
     Adaptive loop & 0.9838 & 0.9183 & 1.21 & 0.17 ms \\
-    LLM baseline & 0.9136 & 0.3183 & 0.00 & 16.95 ms \\
+    Frozen LLM & 0.9136 & 0.3183 & 0.00 & 16.95 ms \\
+    Task-adapted LLM & 0.9098 & 0.3454 & 0.00 & 32.11 ms \\
     \bottomrule
   \end{tabular}
 \vspace{0.4cm}
   \begin{itemize}
-    \item The main project comparison is adaptive loop versus the LLM baseline.
+    \item The stronger task-adapted LLM improved only modestly over the frozen LLM baseline.
     \item Best macro F1 came from the adaptive loop.
     \item Average loop compute dropped by about 79.8\% versus fixed depth.
-    \item The adaptive model was about 101x faster per sample than the LLM baseline.
+    \item The adaptive model was about 189x faster per sample than the task-adapted LLM.
     \item Critical-class performance remained strong with perfect precision and 0.75 recall on the small FD001 critical subset.
   \end{itemize}
 \end{frame}
@@ -44,7 +45,7 @@
   \begin{itemize}
     \item Fixed depth won on validation macro F1, but adaptive depth generalized better on test.
     \item Adaptive looping improved class balance, especially beyond the dominant normal class.
-    \item The LLM baseline kept decent nominal accuracy but collapsed on macro F1 because it under-served minority failure states.
+    \item Even after maintenance-specific fine-tuning, the LLM still under-served minority failure states and reached only 0.3454 macro F1.
     \item The main value is not just accuracy; it is better triage under a lower average compute budget than both recurrent and LLM alternatives.
     \item Most remaining errors were normal-versus-warning confusions rather than full failure-state collapse.
   \end{itemize}

@@ -40,6 +40,14 @@ def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
 
 
+def resolve_device() -> torch.device:
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+
 def build_model(name: str, config: ModelConfig) -> nn.Module:
     if name == "baseline":
         return BaselineClassifier(config)
@@ -425,7 +433,7 @@ def main() -> None:
         exit_threshold=args.exit_threshold,
     )
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = resolve_device()
     model = build_model(args.model, model_config).to(device)
     health_criterion = nn.CrossEntropyLoss()
     action_criterion = nn.CrossEntropyLoss()

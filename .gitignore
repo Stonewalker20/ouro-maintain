@@ -5,6 +5,7 @@
 __pycache__/
 *.pyc
 .venv/
+src/ouromaintain.egg-info/
 
 data/
 !data/.gitkeep
