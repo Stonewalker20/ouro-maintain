@@ -4,7 +4,8 @@
   \begin{itemize}
     \item Built deliverables: trained benchmark suite, IEEE report, Streamlit dashboard, and presentation deck.
     \item Main benchmark: C-MAPSS FD001 comparing baseline, fixed loop, adaptive loop, and LLM baseline.
-    \item Live demo artifact: dashboard sample bundle with per-window predictions and adaptive depth traces.
+    \item Main quantitative claim: the adaptive loop beat the LLM baseline on both macro F1 and measured latency.
+    \item Live demo artifact: dashboard sample bundle with per-window predictions, maintenance actions, subsystem attribution, and adaptive depth traces.
   \end{itemize}
 \end{frame}
 
@@ -25,6 +26,7 @@
     \item Best macro F1 came from the adaptive loop.
     \item Average loop compute dropped by about 79.8\% versus fixed depth.
     \item The adaptive model was about 101x faster per sample than the LLM baseline.
+    \item Critical-class performance remained strong with perfect precision and 0.75 recall on the small FD001 critical subset.
   \end{itemize}
 \end{frame}
 
@@ -44,6 +46,7 @@
     \item Adaptive looping improved class balance, especially beyond the dominant normal class.
     \item The LLM baseline kept decent nominal accuracy but collapsed on macro F1 because it under-served minority failure states.
     \item The main value is not just accuracy; it is better triage under a lower average compute budget than both recurrent and LLM alternatives.
+    \item Most remaining errors were normal-versus-warning confusions rather than full failure-state collapse.
   \end{itemize}
 \end{frame}
 
@@ -52,11 +55,11 @@
     \toprule
     Dataset & Split & Macro F1 & Avg. Depth \\
     \midrule
-    FD001 LLM & Test & 0.3183 & 0.00 \\
-    FD001 & Test & 0.9183 & 1.21 \\
-    FD002 & Test & 0.9656 & 1.11 \\
-    FD003 & Test & 0.8300 & 1.20 \\
-    FD004 & Test & 0.9280 & 1.12 \\
+    CMAPSS FD001 LLM & Test & 0.3183 & 0.00 \\
+    CMAPSS FD001 & Test & 0.9183 & 1.21 \\
+    CMAPSS FD002 & Test & 0.9656 & 1.11 \\
+    CMAPSS FD003 & Test & 0.8300 & 1.20 \\
+    CMAPSS FD004 & Test & 0.9280 & 1.12 \\
     IMS 1st & Val & 0.9773 & 1.54 \\
     IMS 2nd & Val & 0.9501 & 2.20 \\
     IMS 4th & Val & 0.9417 & 1.51 \\
@@ -65,6 +68,6 @@
 \vspace{0.4cm}
   \begin{itemize}
     \item CMAPSS uses official test splits.
-    \item IMS uses stratified validation in this project implementation.
+    \item IMS uses stratified validation in this project implementation because temporal-tail splits dropped health states.
   \end{itemize}
 \end{frame}
