@@ -17,24 +17,36 @@ CANONICAL_ARTIFACTS = {
     "cmapss_fd001_fixed",
     "cmapss_fd001_adaptive",
     "cmapss_fd001_llm",
+    "cmapss_fd001_llm_task",
     "cmapss_fd002_adaptive",
     "cmapss_fd002_llm",
+    "cmapss_fd002_llm_task",
     "cmapss_fd003_adaptive",
     "cmapss_fd003_llm",
+    "cmapss_fd003_llm_task",
     "cmapss_fd004_adaptive",
     "cmapss_fd004_llm",
+    "cmapss_fd004_llm_task",
     "ims_1st_test_adaptive_stratified",
     "ims_1st_test_llm",
+    "ims_1st_test_llm_task",
     "ims_2nd_test_adaptive",
     "ims_2nd_test_llm",
+    "ims_2nd_test_llm_task",
     "ims_4th_test_txt_adaptive",
     "ims_4th_test_txt_llm",
+    "ims_4th_test_txt_llm_task",
 }
 
 
 def parse_slug(slug: str) -> tuple[str, str, str]:
     if slug == "ims_1st_test_adaptive_stratified":
         return "ims", "1st_test (stratified)", "adaptive"
+    if slug.endswith("_llm_task"):
+        parts = slug.split("_")
+        dataset = parts[0]
+        run = "_".join(parts[1:-2])
+        return dataset, run, "llm_task"
     parts = slug.split("_")
     dataset = parts[0]
     model = parts[-1]
@@ -91,9 +103,9 @@ def main() -> None:
             "",
             "Canonical result set notes:",
             "",
-            "- `CMAPSS FD001` includes the baseline, fixed-depth, adaptive, and LLM comparison.",
-            "- `CMAPSS FD002-FD004` now include both adaptive and LLM rows on the official test splits.",
-            "- `IMS 1st_test`, `2nd_test`, and `4th_test/txt` now include both adaptive and LLM rows on validation splits.",
+            "- `CMAPSS FD001` includes the baseline, fixed-depth, adaptive, frozen LLM, and task-adapted LLM comparison.",
+            "- `CMAPSS FD002-FD004` now include adaptive, frozen LLM, and task-adapted LLM rows on the official test splits.",
+            "- `IMS 1st_test`, `2nd_test`, and `4th_test/txt` now include adaptive, frozen LLM, and task-adapted LLM rows on validation splits.",
             "- Earlier smoke runs and exploratory IMS artifacts are intentionally excluded from this final summary.",
         ]
     )

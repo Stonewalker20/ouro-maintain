@@ -40,17 +40,17 @@ The adaptive loop achieved the best test macro F1 while reducing average loop co
 
 ### Full Matrix Comparison
 
-| Dataset | Adaptive Macro F1 | LLM Macro F1 | Gap |
-|---|---:|---:|---:|
-| `CMAPSS FD001` | 0.9183 | 0.3183 | 0.6000 |
-| `CMAPSS FD002` | 0.9656 | 0.3163 | 0.6494 |
-| `CMAPSS FD003` | 0.8300 | 0.3239 | 0.5061 |
-| `CMAPSS FD004` | 0.9280 | 0.3219 | 0.6061 |
-| `IMS 1st_test` | 0.9773 | 0.2481 | 0.7292 |
-| `IMS 2nd_test` | 0.9501 | 0.2447 | 0.7054 |
-| `IMS 4th_test/txt` | 0.9417 | 0.2495 | 0.6922 |
+| Dataset | Adaptive | Frozen LLM | Task-adapted LLM | Adaptive Gap vs Task |
+|---|---:|---:|---:|---:|
+| `CMAPSS FD001` | 0.9183 | 0.3183 | 0.3454 | 0.5729 |
+| `CMAPSS FD002` | 0.9656 | 0.3163 | 0.4300 | 0.5356 |
+| `CMAPSS FD003` | 0.8300 | 0.3239 | 0.4485 | 0.3815 |
+| `CMAPSS FD004` | 0.9280 | 0.3219 | 0.4988 | 0.4292 |
+| `IMS 1st_test` | 0.9773 | 0.2481 | 0.2481 | 0.7292 |
+| `IMS 2nd_test` | 0.9501 | 0.2447 | 0.2447 | 0.7054 |
+| `IMS 4th_test/txt` | 0.9417 | 0.2495 | 0.2495 | 0.6922 |
 
-The full matrix now shows the same pattern on every local dataset: the adaptive looped model decisively outperforms the text-serialized LLM baseline on class-balanced maintenance prediction.
+The full matrix now shows the same pattern on every local dataset: the adaptive looped model decisively outperforms both the frozen and task-adapted LLM baselines on class-balanced maintenance prediction.
 
 ## IMS
 
@@ -58,14 +58,15 @@ The IMS preprocessing and training path is implemented, including extraction, st
 
 Canonical IMS validation results:
 
-| Run | Model | Accuracy | Macro F1 | Avg. Depth |
-|---|---|---:|---:|---:|
-| `1st_test` | Adaptive | 0.9725 | 0.9773 | 1.54 |
-| `2nd_test` | Adaptive | 0.9400 | 0.9501 | 2.20 |
-| `4th_test/txt` | Adaptive | 0.9558 | 0.9417 | 1.51 |
+| Run | Adaptive | Frozen LLM | Task-adapted LLM |
+|---|---:|---:|---:|
+| `1st_test` | 0.9773 | 0.2481 | 0.2481 |
+| `2nd_test` | 0.9501 | 0.2447 | 0.2447 |
+| `4th_test/txt` | 0.9417 | 0.2495 | 0.2495 |
 
 Interpretation:
 
 - these IMS results use stratified validation rather than a strict temporal tail split
 - that choice keeps all health classes present in the evaluation fold
+- task adaptation did not improve the DistilBERT baseline on the IMS runs under this setup
 - the earlier temporal-split IMS runs were retained as exploratory artifacts but are excluded from the final benchmark table

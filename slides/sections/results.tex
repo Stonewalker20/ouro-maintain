@@ -52,22 +52,23 @@
 \end{frame}
 
 \begin{frame}{All Dataset Matrix}
-  \begin{tabular}{lccc}
+  \begin{tabular}{lcccc}
     \toprule
-    Dataset & Adaptive & LLM & Gap \\
+    Dataset & Adaptive & Frozen & Task & Gap vs Task \\
     \midrule
-    FD001 & 0.9183 & 0.3183 & +0.6000 \\
-    FD002 & 0.9656 & 0.3163 & +0.6494 \\
-    FD003 & 0.8300 & 0.3239 & +0.5061 \\
-    FD004 & 0.9280 & 0.3219 & +0.6061 \\
-    IMS 1st & 0.9773 & 0.2481 & +0.7292 \\
-    IMS 2nd & 0.9501 & 0.2447 & +0.7054 \\
-    IMS 4th & 0.9417 & 0.2495 & +0.6922 \\
+    FD001 & 0.9183 & 0.3183 & 0.3454 & +0.5729 \\
+    FD002 & 0.9656 & 0.3163 & 0.4300 & +0.5356 \\
+    FD003 & 0.8300 & 0.3239 & 0.4485 & +0.3815 \\
+    FD004 & 0.9280 & 0.3219 & 0.4988 & +0.4292 \\
+    IMS 1st & 0.9773 & 0.2481 & 0.2481 & +0.7292 \\
+    IMS 2nd & 0.9501 & 0.2447 & 0.2447 & +0.7054 \\
+    IMS 4th & 0.9417 & 0.2495 & 0.2495 & +0.6922 \\
     \bottomrule
   \end{tabular}
 \vspace{0.4cm}
   \begin{itemize}
-    \item The adaptive model beats the LLM baseline on every local dataset in the matrix.
+    \item The adaptive model beats both frozen and task-adapted LLM baselines on every local dataset in the matrix.
+    \item Task adaptation helps on the CMAPSS subsets, but not on the IMS runs under this setup.
     \item CMAPSS rows are official test splits; IMS rows are validation-only comparisons.
   \end{itemize}
 \end{frame}
