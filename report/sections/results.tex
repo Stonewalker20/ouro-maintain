@@ -14,25 +14,26 @@ The primary quantitative results come from C-MAPSS FD001. The adaptive looped mo
 \subsection{All Dataset Results}
 Table~\ref{tab:all-datasets} summarizes the canonical local benchmark matrix. C-MAPSS FD001 is the full comparison point, while FD002--FD004 extend the adaptive model across additional official subsets. IMS results are reported on stratified validation folds because those runs do not provide a separate official test split under the present experimental protocol.
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
+\small
 \caption{Canonical local benchmark results}
 \label{tab:all-datasets}
-\begin{tabular}{@{}lccc@{}}
+\begin{tabular}{@{}llcc@{}}
 \toprule
 Dataset & Split & Macro F1 & Avg. depth \\
 \midrule
-C-MAPSS FD001 LLM & Test & 0.3183 & 0.00 \\
-C-MAPSS FD001 adaptive & Test & 0.9183 & 1.21 \\
-C-MAPSS FD002 adaptive & Test & 0.9656 & 1.11 \\
-C-MAPSS FD003 adaptive & Test & 0.8300 & 1.20 \\
-C-MAPSS FD004 adaptive & Test & 0.9280 & 1.12 \\
+CMAPSS FD001 LLM & Test & 0.3183 & 0.00 \\
+CMAPSS FD001 adaptive & Test & 0.9183 & 1.21 \\
+CMAPSS FD002 adaptive & Test & 0.9656 & 1.11 \\
+CMAPSS FD003 adaptive & Test & 0.8300 & 1.20 \\
+CMAPSS FD004 adaptive & Test & 0.9280 & 1.12 \\
 IMS 1st\_test adaptive & Validation & 0.9773 & 1.54 \\
 IMS 2nd\_test adaptive & Validation & 0.9501 & 2.20 \\
 IMS 4th\_test/txt adaptive & Validation & 0.9417 & 1.51 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \begin{figure}[t]
 \centering

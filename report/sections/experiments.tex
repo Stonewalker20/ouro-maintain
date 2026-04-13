@@ -11,8 +11,10 @@ The evaluation focuses on the core comparison between direct prediction, fixed-d
 \subsection{Main Comparison}
 \begin{table}[t]
 \centering
+\small
 \caption{C-MAPSS FD001 test-set results}
 \label{tab:results-main}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 Model & Accuracy & Macro F1 & Avg. depth & Latency (ms) \\
@@ -23,6 +25,7 @@ Adaptive looped model & 0.9838 & 0.9183 & 1.21 & 0.17 \\
 Text-serialized LLM baseline & 0.9136 & 0.3183 & 0.00 & 16.95 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 The main outcome is that adaptive looping improves macro F1 by 2.9 points over the fixed-depth loop while using only about 20.2\% of the fixed loop's average depth budget. Relative to the text-serialized LLM baseline, the adaptive model improves macro F1 by roughly 60 points while reducing measured CPU latency from 16.95\,ms/sample to 0.17\,ms/sample. This corresponds to an approximate 79.8\% reduction in loop computation relative to the fixed-depth recurrent baseline and roughly a 101x latency advantage over the LLM baseline.
