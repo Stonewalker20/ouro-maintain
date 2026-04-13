@@ -191,6 +191,12 @@ def main() -> None:
         help="IMS run directory to load after extraction.",
     )
     parser.add_argument(
+        "--ims-file-step",
+        type=int,
+        default=1,
+        help="Use every Nth IMS snapshot file to reduce preprocessing cost on very long runs.",
+    )
+    parser.add_argument(
         "--model",
         choices=["baseline", "fixed", "adaptive"],
         default="adaptive",
@@ -236,7 +242,7 @@ def main() -> None:
         )
         test_data = None
     elif args.dataset == "ims":
-        df = load_ims_run(args.ims_root, args.ims_run, data_config)
+        df = load_ims_run(args.ims_root, args.ims_run, data_config, file_step=args.ims_file_step)
         windowed = build_windows(df, data_config)
         train_data, val_data = split_windowed_by_asset(
             windowed,

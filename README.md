@@ -161,6 +161,7 @@ The primary completed benchmark is C-MAPSS FD001. The best run is the adaptive l
 - adaptive average test depth: `1.21` versus `6.0` for the fixed loop
 
 See [docs/results-summary.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/results-summary.md:1) for the tracked metric table.
+See [docs/all-results.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/all-results.md:1) for the full canonical local benchmark matrix across all completed local datasets.
 
 ## Dashboard
 

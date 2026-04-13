@@ -105,19 +105,22 @@ def _stat_features(signal: np.ndarray, prefix: str) -> dict[str, float]:
     }
 
 
-def load_ims_run(extracted_root: str, run_name: str, config: DataConfig) -> pd.DataFrame:
+def load_ims_run(extracted_root: str, run_name: str, config: DataConfig, file_step: int = 1) -> pd.DataFrame:
     run_dir = Path(extracted_root) / run_name
     if not run_dir.exists():
         raise ValueError(f"IMS run directory not found: {run_dir}")
+    if file_step < 1:
+        raise ValueError("IMS file_step must be at least 1.")
 
     cache_dir = Path(extracted_root) / ".cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_key = run_name.replace("/", "__")
-    cache_path = cache_dir / f"{cache_key}_features.csv"
+    cache_path = cache_dir / f"{cache_key}_step{file_step}_features.csv"
     if cache_path.exists():
         return pd.read_csv(cache_path)
 
     files = sorted(path for path in run_dir.rglob("*") if path.is_file() and not path.name.startswith("."))
+    files = files[::file_step]
     if not files:
         raise ValueError(f"No IMS snapshot files found under {run_dir}")
 

@@ -35,17 +35,18 @@ The adaptive loop achieved the best test macro F1 while reducing average loop co
 
 ## IMS
 
-The IMS preprocessing and training path is implemented, including extraction, statistical feature generation, caching, and temporal-split evaluation.
+The IMS preprocessing and training path is implemented, including extraction, statistical feature generation, caching, and stratified validation evaluation.
 
-Exploratory validation results on `1st_test`:
+Canonical IMS validation results:
 
-| Model | Split | Accuracy | Macro F1 | Avg. Depth |
+| Run | Model | Accuracy | Macro F1 | Avg. Depth |
 |---|---|---:|---:|---:|
-| Baseline | validation | 0.2500 | 0.1333 | 0.00 |
-| Adaptive | validation | 0.2500 | 0.1374 | 1.56 |
+| `1st_test` | Adaptive | 0.9725 | 0.9773 | 1.54 |
+| `2nd_test` | Adaptive | 0.9400 | 0.9501 | 2.20 |
+| `4th_test/txt` | Adaptive | 0.9558 | 0.9417 | 1.51 |
 
 Interpretation:
 
-- the temporal validation segment contains only `warning` and `critical` windows
-- there are no `normal` examples in that split
-- IMS is currently better treated as an exploratory secondary dataset than a stable headline benchmark
+- these IMS results use stratified validation rather than a strict temporal tail split
+- that choice keeps all health classes present in the evaluation fold
+- the earlier temporal-split IMS runs were retained as exploratory artifacts but are excluded from the final benchmark table
