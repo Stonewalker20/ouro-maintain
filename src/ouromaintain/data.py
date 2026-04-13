@@ -112,7 +112,8 @@ def load_ims_run(extracted_root: str, run_name: str, config: DataConfig) -> pd.D
 
     cache_dir = Path(extracted_root) / ".cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_path = cache_dir / f"{run_name}_features.csv"
+    cache_key = run_name.replace("/", "__")
+    cache_path = cache_dir / f"{cache_key}_features.csv"
     if cache_path.exists():
         return pd.read_csv(cache_path)
 
@@ -162,10 +163,42 @@ def apply_standardizer(features: np.ndarray, mean: np.ndarray, std: np.ndarray) 
 
 
 def split_windowed_by_asset(
-    data: WindowedData, val_ratio: float, seed: int
+    data: WindowedData, val_ratio: float, seed: int, single_asset_mode: str = "temporal"
 ) -> tuple[WindowedData, WindowedData]:
     asset_ids = np.unique(data.asset_ids)
     if len(asset_ids) < 2:
+        if single_asset_mode == "stratified":
+            rng = np.random.default_rng(seed)
+            train_indices: list[int] = []
+            val_indices: list[int] = []
+            unique_labels = np.unique(data.labels)
+            for label in unique_labels:
+                label_indices = np.where(data.labels == label)[0]
+                shuffled = label_indices.copy()
+                rng.shuffle(shuffled)
+                split_idx = max(1, int(len(shuffled) * (1 - val_ratio)))
+                if split_idx >= len(shuffled):
+                    split_idx = len(shuffled) - 1
+                train_indices.extend(shuffled[:split_idx].tolist())
+                val_indices.extend(shuffled[split_idx:].tolist())
+
+            train_indices_arr = np.asarray(sorted(train_indices))
+            val_indices_arr = np.asarray(sorted(val_indices))
+            return (
+                WindowedData(
+                    features=data.features[train_indices_arr],
+                    labels=data.labels[train_indices_arr],
+                    asset_ids=data.asset_ids[train_indices_arr],
+                    feature_names=data.feature_names,
+                ),
+                WindowedData(
+                    features=data.features[val_indices_arr],
+                    labels=data.labels[val_indices_arr],
+                    asset_ids=data.asset_ids[val_indices_arr],
+                    feature_names=data.feature_names,
+                ),
+            )
+
         split_idx = max(1, int(len(data.labels) * (1 - val_ratio)))
         if split_idx >= len(data.labels):
             split_idx = len(data.labels) - 1

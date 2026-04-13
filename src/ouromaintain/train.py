@@ -206,6 +206,12 @@ def main() -> None:
     parser.add_argument("--warning-rul", type=int, default=50)
     parser.add_argument("--critical-rul", type=int, default=15)
     parser.add_argument("--output-dir", default="artifacts/latest", help="Directory for metrics and checkpoints.")
+    parser.add_argument(
+        "--single-asset-split",
+        choices=["temporal", "stratified"],
+        default="temporal",
+        help="Validation split mode when a dataset contains only one asset/run.",
+    )
     args = parser.parse_args()
 
     data_config = DataConfig(
@@ -222,19 +228,29 @@ def main() -> None:
             raise ValueError("--data-path is required when --dataset csv is used.")
         df = load_telemetry_csv(args.data_path, data_config)
         windowed = build_windows(df, data_config)
-        train_data, val_data = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed)
+        train_data, val_data = split_windowed_by_asset(
+            windowed,
+            train_config.val_ratio,
+            train_config.seed,
+            single_asset_mode=args.single_asset_split,
+        )
         test_data = None
     elif args.dataset == "ims":
         df = load_ims_run(args.ims_root, args.ims_run, data_config)
         windowed = build_windows(df, data_config)
-        train_data, val_data = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed)
+        train_data, val_data = split_windowed_by_asset(
+            windowed,
+            train_config.val_ratio,
+            train_config.seed,
+            single_asset_mode=args.single_asset_split,
+        )
         test_data = None
     else:
         train_df, test_df = load_cmapss_train_test(args.cmapss_root, args.cmapss_subset, data_config)
         train_windowed = build_windows(train_df, data_config)
         test_data = build_windows(test_df, data_config)
         train_data, val_data = split_windowed_by_asset(
-            train_windowed, train_config.val_ratio, train_config.seed
+            train_windowed, train_config.val_ratio, train_config.seed, single_asset_mode=args.single_asset_split
         )
 
     mean, std = fit_standardizer(train_data.features)
