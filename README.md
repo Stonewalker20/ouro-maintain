@@ -212,3 +212,9 @@ This repo is now aligned to the two local dataset families used in the project:
 - `IMS/` and `IMS_extracted/` for the bearing run-to-failure experiments
 
 Use [docs/datasets.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/datasets.md:1) for dataset-specific notes and commands.
+
+## Expansion roadmap
+
+The next research phase is to test the same looped-transformer vs task-specific LLM comparison on spacecraft, automotive, machinery, and HVAC data.
+
+See [docs/domain-expansion-plan.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/domain-expansion-plan.md:1) for the dataset shortlist, engineering changes, and recommended order of execution.
