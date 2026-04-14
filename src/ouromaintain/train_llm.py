@@ -16,7 +16,15 @@ from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModel, AutoTokenizer
 
 from .config import DataConfig, TrainConfig
-from .data import build_windows, load_cmapss_train_test, load_ims_run, load_telemetry_csv, split_windowed_by_asset
+from .data import (
+    build_windows,
+    load_cmapss_train_test,
+    load_ims_run,
+    load_lbnl_fcu_dataset,
+    load_paderborn_dataset,
+    load_telemetry_csv,
+    split_windowed_by_asset,
+)
 
 LABEL_NAMES = ["normal", "warning", "critical"]
 ACTION_NAMES = ["monitor", "schedule_service", "inspect_urgent", "shutdown_now"]
@@ -445,13 +453,20 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Train a telemetry-text transformer baseline on serialized maintenance windows."
     )
-    parser.add_argument("--dataset", choices=["csv", "cmapss", "ims"], default="cmapss")
+    parser.add_argument("--dataset", choices=["csv", "cmapss", "ims", "hvac", "paderborn"], default="cmapss")
     parser.add_argument("--data-path")
     parser.add_argument("--cmapss-root", default="CMAPSSData")
     parser.add_argument("--cmapss-subset", default="FD001", choices=["FD001", "FD002", "FD003", "FD004"])
     parser.add_argument("--ims-root", default="IMS_extracted")
     parser.add_argument("--ims-run", default="1st_test")
     parser.add_argument("--ims-file-step", type=int, default=1)
+    parser.add_argument("--hvac-root", default="LBNL_FDD_Dataset_FCU")
+    parser.add_argument("--hvac-pattern", default="*.csv")
+    parser.add_argument("--hvac-row-step", type=int, default=60)
+    parser.add_argument("--hvac-max-files", type=int, default=0)
+    parser.add_argument("--paderborn-zip", default="data_downloads/paderborn/paderborn-db.zip")
+    parser.add_argument("--paderborn-sample-stride", type=int, default=256)
+    parser.add_argument("--paderborn-max-measurements-per-bearing", type=int, default=4)
     parser.add_argument("--window-size", type=int, default=32)
     parser.add_argument("--stride", type=int, default=8)
     parser.add_argument("--backbone", default="distilbert-base-uncased")
@@ -464,7 +479,7 @@ def main() -> None:
     parser.add_argument("--trainable-layers", type=int, default=0)
     parser.add_argument(
         "--single-asset-split",
-        choices=["temporal", "stratified", "stage_temporal"],
+        choices=["temporal", "stratified", "stage_temporal", "window_stratified", "asset_label_stratified"],
         default="temporal",
     )
     freeze_group = parser.add_mutually_exclusive_group()
@@ -481,12 +496,41 @@ def main() -> None:
     if args.dataset == "ims" and split_mode == "temporal":
         split_mode = "stage_temporal"
         print("ims_single_asset_split=stage_temporal", flush=True)
+    if args.dataset == "hvac" and split_mode == "temporal":
+        split_mode = "asset_label_stratified"
+        print("hvac_split_mode=asset_label_stratified", flush=True)
+    if args.dataset == "paderborn" and split_mode == "temporal":
+        split_mode = "asset_label_stratified"
+        print("paderborn_split_mode=asset_label_stratified", flush=True)
 
     test_windowed = None
     if args.dataset == "csv":
         if not args.data_path:
             raise ValueError("--data-path is required when --dataset csv is used.")
         df = load_telemetry_csv(args.data_path, data_config)
+        windowed = build_windows(df, data_config)
+        train_split, val_split = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
+    elif args.dataset == "hvac":
+        df = load_lbnl_fcu_dataset(
+            args.hvac_root,
+            data_config,
+            pattern=args.hvac_pattern,
+            row_step=args.hvac_row_step,
+            max_files=None if args.hvac_max_files <= 0 else args.hvac_max_files,
+        )
+        windowed = build_windows(df, data_config)
+        train_split, val_split = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
+    elif args.dataset == "paderborn":
+        df = load_paderborn_dataset(
+            args.paderborn_zip,
+            data_config,
+            sample_stride=args.paderborn_sample_stride,
+            max_measurements_per_bearing=(
+                None
+                if args.paderborn_max_measurements_per_bearing <= 0
+                else args.paderborn_max_measurements_per_bearing
+            ),
+        )
         windowed = build_windows(df, data_config)
         train_split, val_split = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
     elif args.dataset == "ims":

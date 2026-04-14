@@ -20,7 +20,9 @@ from .data import (
     build_windows,
     fit_standardizer,
     load_cmapss_train_test,
+    load_lbnl_fcu_dataset,
     load_ims_run,
+    load_paderborn_dataset,
     load_telemetry_csv,
     split_windowed_by_asset,
 )
@@ -314,7 +316,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Train predictive-maintenance models.")
     parser.add_argument(
         "--dataset",
-        choices=["csv", "cmapss", "ims"],
+        choices=["csv", "cmapss", "ims", "hvac", "paderborn"],
         default="cmapss",
         help="Dataset loader to use.",
     )
@@ -347,6 +349,45 @@ def main() -> None:
         help="Use every Nth IMS snapshot file to reduce preprocessing cost on very long runs.",
     )
     parser.add_argument(
+        "--hvac-root",
+        default="LBNL_FDD_Dataset_FCU",
+        help="Directory containing LBNL HVAC fault CSV files.",
+    )
+    parser.add_argument(
+        "--hvac-pattern",
+        default="*.csv",
+        help="Glob pattern for HVAC CSV files inside --hvac-root.",
+    )
+    parser.add_argument(
+        "--hvac-row-step",
+        type=int,
+        default=60,
+        help="Use every Nth HVAC row to reduce minute-level sequence volume.",
+    )
+    parser.add_argument(
+        "--hvac-max-files",
+        type=int,
+        default=0,
+        help="Optional limit on the number of HVAC CSV files to load. Use 0 for all files.",
+    )
+    parser.add_argument(
+        "--paderborn-zip",
+        default="data_downloads/paderborn/paderborn-db.zip",
+        help="Path to the zipped Paderborn bearing dataset.",
+    )
+    parser.add_argument(
+        "--paderborn-sample-stride",
+        type=int,
+        default=256,
+        help="Use every Nth raw sample within each Paderborn measurement.",
+    )
+    parser.add_argument(
+        "--paderborn-max-measurements-per-bearing",
+        type=int,
+        default=4,
+        help="Optional limit on measurements loaded per Paderborn bearing. Use 0 for all measurements.",
+    )
+    parser.add_argument(
         "--model",
         choices=["baseline", "fixed", "adaptive"],
         default="adaptive",
@@ -365,7 +406,7 @@ def main() -> None:
     parser.add_argument("--output-dir", default="artifacts/latest", help="Directory for metrics and checkpoints.")
     parser.add_argument(
         "--single-asset-split",
-        choices=["temporal", "stratified", "stage_temporal"],
+        choices=["temporal", "stratified", "stage_temporal", "window_stratified", "asset_label_stratified"],
         default="temporal",
         help="Validation split mode when a dataset contains only one asset/run.",
     )
@@ -391,11 +432,42 @@ def main() -> None:
     if args.dataset == "ims" and split_mode == "temporal":
         split_mode = "stage_temporal"
         print("ims_single_asset_split=stage_temporal")
+    if args.dataset == "hvac" and split_mode == "temporal":
+        split_mode = "asset_label_stratified"
+        print("hvac_split_mode=asset_label_stratified")
+    if args.dataset == "paderborn" and split_mode == "temporal":
+        split_mode = "asset_label_stratified"
+        print("paderborn_split_mode=asset_label_stratified")
 
     if args.dataset == "csv":
         if not args.data_path:
             raise ValueError("--data-path is required when --dataset csv is used.")
         df = load_telemetry_csv(args.data_path, data_config)
+        windowed = build_windows(df, data_config)
+        train_data, val_data = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
+        test_data = None
+    elif args.dataset == "hvac":
+        df = load_lbnl_fcu_dataset(
+            args.hvac_root,
+            data_config,
+            pattern=args.hvac_pattern,
+            row_step=args.hvac_row_step,
+            max_files=None if args.hvac_max_files <= 0 else args.hvac_max_files,
+        )
+        windowed = build_windows(df, data_config)
+        train_data, val_data = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
+        test_data = None
+    elif args.dataset == "paderborn":
+        df = load_paderborn_dataset(
+            args.paderborn_zip,
+            data_config,
+            sample_stride=args.paderborn_sample_stride,
+            max_measurements_per_bearing=(
+                None
+                if args.paderborn_max_measurements_per_bearing <= 0
+                else args.paderborn_max_measurements_per_bearing
+            ),
+        )
         windowed = build_windows(df, data_config)
         train_data, val_data = split_windowed_by_asset(windowed, train_config.val_ratio, train_config.seed, split_mode)
         test_data = None
