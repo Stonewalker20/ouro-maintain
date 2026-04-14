@@ -64,10 +64,21 @@
 \setbeamertemplate{background canvas}{%
   \begin{tikzpicture}[remember picture,overlay]
     \fill[white] (current page.south west) rectangle (current page.north east);
-    \fill[oustone] (current page.south west) rectangle ([yshift=0.37cm]current page.south east);
-    \fill[ougold,opacity=0.10] (-0.8,7.2) circle (2.3);
-    \fill[maintainteal,opacity=0.05] (13.4,7.4) circle (2.4);
-    \fill[ougoldlight,opacity=0.18] (12.7,-0.2) circle (1.7);
+    \fill[oustone!78!white] (current page.south west) rectangle ([yshift=0.37cm]current page.south east);
+    \fill[maintainteal!6] ([xshift=-0.8cm,yshift=-0.5cm]current page.north west) --
+      ([xshift=3.9cm,yshift=-0.5cm]current page.north west) --
+      ([xshift=1.2cm,yshift=-7.8cm]current page.north west) --
+      ([xshift=-3.5cm,yshift=-7.8cm]current page.north west) -- cycle;
+    \fill[maintainsky!5] ([xshift=8.8cm,yshift=0.1cm]current page.south west) --
+      ([xshift=13.6cm,yshift=0.1cm]current page.south west) --
+      ([xshift=11.2cm,yshift=5.7cm]current page.south west) --
+      ([xshift=6.6cm,yshift=5.7cm]current page.south west) -- cycle;
+    \fill[ougold!10] ([xshift=10.6cm,yshift=1.0cm]current page.south west) rectangle ++(2.6cm,4.6cm);
+    \draw[maintainteal!18,line width=0.6pt] ([xshift=9.5cm,yshift=0.9cm]current page.south west) -- ++(2.7cm,0);
+    \draw[maintainteal!18,line width=0.6pt] ([xshift=9.9cm,yshift=1.3cm]current page.south west) -- ++(2.9cm,0);
+    \draw[maintainteal!18,line width=0.6pt] ([xshift=9.3cm,yshift=1.7cm]current page.south west) -- ++(2.4cm,0);
+    \draw[maintainsky!14,line width=0.5pt] ([xshift=10.9cm,yshift=3.1cm]current page.south west) rectangle ++(1.35cm,1.55cm);
+    \draw[ougold!28,line width=0.7pt] ([xshift=0.65cm,yshift=0.95cm]current page.south west) -- ([xshift=4.1cm,yshift=0.95cm]current page.south west);
     \draw[ouline,line width=0.4pt] ([yshift=0.37cm]current page.south west) -- ([yshift=0.37cm]current page.south east);
   \end{tikzpicture}
 }
@@ -103,11 +114,20 @@
 
 \setbeamertemplate{title page}{%
   \begin{tikzpicture}[remember picture,overlay]
-    \fill[oustone] (current page.south west) rectangle (current page.north east);
+    \fill[oustone!82!white] (current page.south west) rectangle (current page.north east);
     \fill[ougold] (current page.north west) rectangle ([xshift=3.0cm,yshift=-0.14cm]current page.north west);
-    \fill[ougold,opacity=0.12] ([xshift=10.8cm,yshift=5.9cm]current page.south west) circle (2.5cm);
-    \fill[maintainteal,opacity=0.10] ([xshift=1.0cm,yshift=1.0cm]current page.south west) circle (1.8cm);
-    \fill[oublack,opacity=0.05] ([xshift=12.4cm,yshift=1.5cm]current page.south west) circle (1.3cm);
+    \fill[maintainteal!8] ([xshift=-0.9cm,yshift=0.3cm]current page.north west) --
+      ([xshift=4.6cm,yshift=0.3cm]current page.north west) --
+      ([xshift=2.2cm,yshift=-5.8cm]current page.north west) --
+      ([xshift=-3.2cm,yshift=-5.8cm]current page.north west) -- cycle;
+    \fill[maintainsky!6] ([xshift=8.6cm,yshift=0.3cm]current page.south west) --
+      ([xshift=14.2cm,yshift=0.3cm]current page.south west) --
+      ([xshift=11.1cm,yshift=6.2cm]current page.south west) --
+      ([xshift=5.8cm,yshift=6.2cm]current page.south west) -- cycle;
+    \fill[ougold!12] ([xshift=10.5cm,yshift=1.2cm]current page.south west) rectangle ++(2.7cm,4.9cm);
+    \draw[maintainteal!20,line width=0.7pt] ([xshift=9.5cm,yshift=1.1cm]current page.south west) -- ++(2.9cm,0);
+    \draw[maintainteal!20,line width=0.7pt] ([xshift=9.9cm,yshift=1.55cm]current page.south west) -- ++(3.0cm,0);
+    \draw[maintainteal!20,line width=0.7pt] ([xshift=9.3cm,yshift=2.0cm]current page.south west) -- ++(2.5cm,0);
     \draw[ouline,line width=0.7pt] ([xshift=0.62cm,yshift=0.78cm]current page.south west) rectangle ([xshift=-0.62cm,yshift=-0.78cm]current page.north east);
   \end{tikzpicture}
   \vspace*{1.3cm}
