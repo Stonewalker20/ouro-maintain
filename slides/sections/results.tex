@@ -69,3 +69,20 @@
     \item IMS is a harder dataset, but the same overall pattern remained.
   \end{itemize}
 \end{frame}
+
+\begin{frame}{New Domain Checks}
+  \begin{tabular}{lccc}
+    \toprule
+    Benchmark & Adaptive & Frozen & Task \\
+    \midrule
+    Paderborn & 0.2811 & 0.1838 & 0.1838 \\
+    LBNL FCU & 0.6000 & n/a & n/a \\
+    \bottomrule
+  \end{tabular}
+\vspace{0.4cm}
+  \begin{itemize}
+    \item On machinery data, the looped model still beat both LLM baselines.
+    \item On HVAC data, the looped model worked under a stricter equipment-level split.
+    \item The full HVAC LLM comparison was too slow to finish on the current CPU-only setup.
+  \end{itemize}
+\end{frame}

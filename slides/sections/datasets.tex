@@ -4,17 +4,20 @@
   \begin{itemize}
     \item \textbf{C-MAPSS}: engine sensor data with clear train and test splits.
     \item \textbf{IMS}: bearing vibration data collected as the bearings wear out.
-    \item We only used the two dataset families stored locally in this repo.
+    \item \textbf{LBNL FCU}: HVAC fault data from fan-coil units.
+    \item \textbf{Paderborn}: machinery bearing data with healthy and damaged states.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Why Two Datasets}
+\begin{frame}{Why Four Datasets}
   \begin{tabular}{>{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}p{5cm}}
     \toprule
     Dataset & What it gives us & Why we used it \\
     \midrule
     C-MAPSS & Clean benchmark with standard labels & Main head-to-head comparison \\
     IMS & Harder real wear progression data & Checks whether the result holds outside one benchmark \\
+    LBNL FCU & Building-system faults with known fault types & Tests the idea on HVAC equipment \\
+    Paderborn & Healthy and damaged bearing states & Tests the idea on machinery data \\
     \bottomrule
   \end{tabular}
 \end{frame}
