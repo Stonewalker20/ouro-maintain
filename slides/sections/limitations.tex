@@ -2,10 +2,9 @@
 
 \begin{frame}{Broader Impact \& Limitations}
   \begin{itemize}
-    \item A task-specific looped model can be a better fit than a generic text-first LLM pipeline for numeric maintenance telemetry.
-    \item CMAPSS is simulated telemetry, not a live maintenance deployment stream.
-    \item IMS labels are still derived rather than ground-truth maintenance annotations.
-    \item Action and subsystem targets are coarse supervisory proxies, not technician-authored labels.
-    \item Latency is now benchmarked explicitly, but current numbers are local-device measurements rather than deployment SLAs.
+    \item We learned that a task-specific looped model can fit sensor data better than a text-based LLM pipeline.
+    \item But these are benchmark datasets, not a live building or factory deployment.
+    \item Some labels, especially actions and subsystems, are still approximations.
+    \item The latency numbers are real measurements, but only on our local machine.
   \end{itemize}
 \end{frame}

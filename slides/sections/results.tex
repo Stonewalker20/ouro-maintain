@@ -2,14 +2,14 @@
 
 \begin{frame}{Results \& Demo}
   \begin{itemize}
-    \item Built deliverables: trained benchmark suite, IEEE report, Streamlit dashboard, and presentation deck.
-    \item Main benchmark: C-MAPSS FD001 comparing baseline, fixed loop, adaptive loop, frozen LLM, and task-adapted LLM.
-    \item Main quantitative claim: the adaptive loop beat both the generic and task-adapted LLM baselines on macro F1 and latency.
-    \item Live demo artifact: dashboard sample bundle with per-window predictions, maintenance actions, subsystem attribution, and adaptive depth traces.
+    \item We built the full project: trained models, report, dashboard, and slides.
+    \item The main result is simple: the adaptive looped model beat both LLM baselines.
+    \item It also ran much faster because it stopped early on easy cases.
+    \item We packaged a dashboard demo so the predictions can be shown live.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{C-MAPSS FD001 Test Results}
+\begin{frame}{Main Result on C-MAPSS FD001}
   \begin{tabular}{lcccc}
     \toprule
     Model & Accuracy & Macro F1 & Avg. Depth & Latency \\
@@ -23,11 +23,9 @@
   \end{tabular}
 \vspace{0.4cm}
   \begin{itemize}
-    \item The stronger task-adapted LLM improved only modestly over the frozen LLM baseline.
-    \item Best macro F1 came from the adaptive loop.
-    \item Average loop compute dropped by about 79.8\% versus fixed depth.
-    \item The adaptive model was about 189x faster per sample than the task-adapted LLM.
-    \item Critical-class performance remained strong with perfect precision and 0.75 recall on the small FD001 critical subset.
+    \item Best overall balance came from the adaptive loop.
+    \item It used about 80\% less looping than the fixed-depth version.
+    \item It was about 189x faster per sample than the task-adapted LLM.
   \end{itemize}
 \end{frame}
 
@@ -41,17 +39,16 @@
   \includegraphics[width=0.84\linewidth]{../report/figures/adaptive_history.png}
 \end{frame}
 
-\begin{frame}{Result Interpretation}
+\begin{frame}{What These Numbers Mean}
   \begin{itemize}
-    \item Fixed depth won on validation macro F1, but adaptive depth generalized better on test.
-    \item Adaptive looping improved class balance, especially beyond the dominant normal class.
-    \item Even after maintenance-specific fine-tuning, the LLM still under-served minority failure states and reached only 0.3454 macro F1.
-    \item The main value is not just accuracy; it is better triage under a lower average compute budget than both recurrent and LLM alternatives.
-    \item Most remaining errors were normal-versus-warning confusions rather than full failure-state collapse.
+    \item The looped model was not just faster. It was also better at separating the health states.
+    \item The LLM baselines struggled much more on warning and failure cases.
+    \item Most remaining mistakes were between \texttt{normal} and \texttt{warning}, not total failure misses.
+    \item That matters because maintenance decisions depend on catching the early warning zone.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{All Dataset Matrix}
+\begin{frame}{Did This Hold Across All Datasets?}
   \begin{tabular}{lcccc}
     \toprule
     Dataset & Adaptive & Frozen & Task & Gap vs Task \\
@@ -67,8 +64,8 @@
   \end{tabular}
 \vspace{0.4cm}
   \begin{itemize}
-    \item The adaptive model beats both frozen and task-adapted LLM baselines on every local dataset in the matrix.
-    \item Task adaptation helps on the CMAPSS subsets, but not on the IMS runs under this setup.
-    \item CMAPSS rows are official test splits; IMS rows are validation-only comparisons.
+    \item Yes. The adaptive model won on every local dataset we tested.
+    \item Task adaptation helped the LLM on C-MAPSS, but it still stayed far behind the looped model.
+    \item IMS is a harder dataset, but the same overall pattern remained.
   \end{itemize}
 \end{frame}

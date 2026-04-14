@@ -1,19 +1,19 @@
 \section{Experiments}
 
-\begin{frame}{Experimental Questions}
+\begin{frame}{What We Tested}
   \begin{enumerate}
-    \item Does adaptive depth improve predictive-maintenance performance over fixed-depth baselines?
-    \item Do hard windows use more loop steps than easy windows?
-    \item Can adaptive looping match stronger baselines at similar latency?
-    \item Does early exit reduce average compute without hurting critical-failure recall?
+    \item Is the looped model more accurate than the LLM baselines?
+    \item Does early stopping save time without hurting quality?
+    \item Does the model use more steps on harder examples?
+    \item Do the same patterns hold across the full dataset matrix?
   \end{enumerate}
 \end{frame}
 
-\begin{frame}{Evaluation Plan}
+\begin{frame}{How We Compared the Models}
   \begin{itemize}
-    \item Primary dataset: C-MAPSS FD001 with official test labels.
-    \item Models: direct baseline, fixed-depth loop, adaptive loop, a frozen DistilBERT baseline, and a task-adapted DistilBERT baseline with the top encoder layer unfrozen.
-    \item Metrics: health/action/subsystem accuracy, macro F1, loop depth, and latency in ms per sample.
-    \item Secondary path: IMS run-to-failure preprocessing with stage-aware temporal validation.
+    \item We trained a simple baseline, a fixed loop, an adaptive loop, and two LLM baselines.
+    \item The LLM baselines were a frozen DistilBERT model and a task-adapted DistilBERT model.
+    \item We compared prediction quality and latency.
+    \item We repeated that comparison across all local C-MAPSS and IMS subsets.
   \end{itemize}
 \end{frame}

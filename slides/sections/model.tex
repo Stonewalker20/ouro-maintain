@@ -17,18 +17,18 @@
   \end{center}
   \vspace{0.3cm}
   \begin{itemize}
-    \item Shared recurrent block refines a latent state for up to $K$ steps.
-    \item Confidence-based exit gate stops early on easy examples.
-    \item Final heads predict health class, severity, and action.
-    \item Main comparison: adaptive looped model versus frozen and task-adapted DistilBERT maintenance baselines.
+    \item First, we turn the sensor window into a compact representation.
+    \item Then the looped model can refine its answer step by step.
+    \item If it becomes confident early, it stops early.
+    \item Final outputs: machine health, maintenance action, and likely subsystem.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Training Configuration}
+\begin{frame}{Why This Is Different From the LLM Baseline}
   \begin{itemize}
-    \item Encoder: GRU with hidden size 128.
-    \item Windowing: length 32, stride 8 on CMAPSS FD001.
-    \item Fixed-depth loop: always run $K=6$ latent refinement steps.
-    \item Adaptive loop: stop when class confidence exceeds 0.8.
+    \item The looped model is built for numeric sensor streams.
+    \item The LLM baseline has to read the same data after it is converted into text.
+    \item That makes this a fairer question than ``looped model vs generic chatbot''.
+    \item We tested whether the best task-specific version of each approach works better.
   \end{itemize}
 \end{frame}

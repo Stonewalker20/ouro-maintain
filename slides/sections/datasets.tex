@@ -1,20 +1,20 @@
 \section{Datasets}
 
-\begin{frame}{Primary and Secondary Datasets}
+\begin{frame}{Data We Used}
   \begin{itemize}
-    \item Primary benchmark: \texttt{CMAPSSData/FD001} with official train/test splits.
-    \item Secondary benchmark path: \texttt{IMS/} for bearing degradation and fault progression.
-    \item The project scope is intentionally limited to the two local dataset families in the repo.
+    \item \textbf{C-MAPSS}: engine sensor data with clear train and test splits.
+    \item \textbf{IMS}: bearing vibration data collected as the bearings wear out.
+    \item We only used the two dataset families stored locally in this repo.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Dataset Comparison}
+\begin{frame}{Why Two Datasets}
   \begin{tabular}{>{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}p{5cm}}
     \toprule
-    Dataset & Strength & Use in this project \\
+    Dataset & What it gives us & Why we used it \\
     \midrule
-    CMAPSS & Standard supervised benchmark with official labels & Main experiment and final quantitative result \\
-    IMS & Run-to-failure vibration data with implicit fault progression & Implemented secondary pipeline; harder temporal evaluation \\
+    C-MAPSS & Clean benchmark with standard labels & Main head-to-head comparison \\
+    IMS & Harder real wear progression data & Checks whether the result holds outside one benchmark \\
     \bottomrule
   \end{tabular}
 \end{frame}

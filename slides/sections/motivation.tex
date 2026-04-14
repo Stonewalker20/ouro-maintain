@@ -2,18 +2,18 @@
 
 \begin{frame}{Problem Statement}
   \begin{itemize}
-    \item Reduce unplanned downtime by detecting degradation early.
-    \item Prioritize maintenance by urgency instead of reacting to failures.
-    \item Use adaptive compute so easy windows exit early and ambiguous windows get more reasoning.
-    \item Align the model with the project hypothesis: looped latent refinement should help on noisy sequential telemetry.
+    \item Machines often show warning signs before they fail.
+    \item If we catch those signs early, we can fix equipment before it causes downtime.
+    \item The challenge is that sensor data is noisy, and not every case is equally hard.
+    \item We wanted a model that thinks a little on easy cases and longer on harder ones.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Why This Matters}
+\begin{frame}{What We Wanted the System To Do}
   \begin{itemize}
-    \item Input: rolling telemetry windows plus maintenance context.
-    \item Output: \texttt{normal}, \texttt{warning}, or \texttt{critical}.
-    \item Secondary output: suggested maintenance action.
-    \item Core question: can a looped model beat an LLM baseline on maintenance triage at lower average compute?
+    \item Read a short window of sensor data.
+    \item Decide whether the machine looks \texttt{normal}, \texttt{warning}, or \texttt{critical}.
+    \item Suggest what a technician should do next.
+    \item Test whether this task-specific looped model works better than a task-specific LLM.
   \end{itemize}
 \end{frame}
