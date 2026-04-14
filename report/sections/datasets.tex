@@ -1,5 +1,5 @@
 \section{Datasets}
-The project uses two benchmark families for the core paper results and two additional local extension datasets to test whether the same loop-versus-LLM pattern carries into other maintenance domains. C-MAPSS remains the primary supervised benchmark, IMS bearings provides a second run-to-failure setting, and the extension experiments add fan-coil HVAC faults and machinery condition monitoring.
+The report evaluates the same predictive-maintenance formulation across four local dataset families. Together they cover simulated engine degradation, laboratory run-to-failure bearings, seeded machinery faults, and building HVAC faults. That breadth matters because a looped reasoning model is only useful if it can preserve its advantage when the sensing modality and failure process change.
 
 \subsection{C-MAPSS}
 The C-MAPSS turbofan simulation data provide multivariate time series recorded under multiple operating conditions and fault modes \cite{Saxena2008CMAPSS}. Each trajectory follows an engine from healthy operation to failure, making it suitable for supervised prognostics. The dataset is widely used in prognostic benchmarking because it supports several failure prediction formulations, including direct RUL regression and classification via thresholded remaining life \cite{Ramasso2014CMAPSS}.
@@ -15,7 +15,7 @@ The LBNL fan-coil unit fault dataset contains labeled building-equipment traject
 \subsection{Paderborn Bearings}
 The Paderborn bearing data center contains healthy bearings together with seeded and real bearing damage states recorded under several operating conditions \cite{PaderbornBearingDataset}. The archive is distributed as MATLAB files, so the implementation reads vibration, current, force, speed, and torque channels directly from the zip file, aligns them to a common sample length, and then applies rolling windows. Healthy bearings are mapped to the normal class, artificial damage states to warning, and real damage states to critical. This benchmark is not run-to-failure; instead it acts as a state-classification extension that checks whether the looped model still beats text-serialized LLM baselines on machinery data.
 
-\subsection{Dataset Summary}
+\subsection{Benchmark Matrix}
 \begin{table}[t]
 \centering
 \caption{Datasets used in OuroMaintain}
@@ -34,3 +34,6 @@ Paderborn & Bearing measurements & Bearing-state labels & Machinery extension \\
 
 \subsection{Preprocessing}
 The implemented preprocessing pipeline standardizes sensor channels using statistics fit on the training split, generates overlapping windows, and aligns labels to each window end point. Validation splits are created at the engine level for C-MAPSS to avoid leakage between windows from the same asset. For IMS, the pipeline converts each vibration snapshot into summary statistics per channel and then applies temporal windows over the derived feature stream. For HVAC and Paderborn, the validation split is asset-label stratified so that each validation fold contains normal, warning, and critical states without mixing windows from the same equipment episode or bearing measurement.
+
+\subsection{How the Datasets Are Used}
+Not every dataset supports the exact same comparison. C-MAPSS provides official train/test splits and is therefore used for the full model comparison plus latency and depth analysis. IMS uses validation-only reporting because its labels are derived from failure progression and the current protocol does not expose a separate official test split. Paderborn is used as the matched cross-domain machinery comparison because all three model families completed there. LBNL HVAC is used as a cross-domain transfer benchmark for the looped model under stricter asset-level splits.

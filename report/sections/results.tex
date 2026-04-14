@@ -1,8 +1,8 @@
 \section{Results}
 \subsection{Results and Demo}
-The primary quantitative results come from C-MAPSS FD001. The adaptive looped model produced the strongest macro F1 score on the held-out test set while using far fewer internal steps than the fixed-depth loop and far lower latency than both the frozen and task-adapted LLM baselines.
+The results are organized as a benchmark matrix, not a single-dataset appendix. C-MAPSS FD001 is the detailed comparison case, FD002--FD004 and IMS test whether the same ordering holds across additional splits, Paderborn provides a matched machinery-domain check, and LBNL HVAC shows looped-model transfer into building systems.
 
-\subsection{Primary Findings}
+\subsection{Benchmark-Wide Findings}
 \begin{itemize}
     \item The adaptive model achieved test macro F1 of 0.9183, outperforming the fixed-depth loop at 0.8891, the direct baseline at 0.8609, the frozen LLM baseline at 0.3183, and the task-adapted LLM baseline at 0.3454.
     \item The adaptive model required an average of only 1.21 recurrent steps on the test set, compared with 6.0 steps for the fixed-depth loop.
@@ -15,8 +15,8 @@ The primary quantitative results come from C-MAPSS FD001. The adaptive looped mo
     \item On the reduced HVAC extension split, the adaptive model reached validation macro F1 of 0.6000 with 1.55 average loop steps and 1.50 ms/sample latency.
 \end{itemize}
 
-\subsection{All Dataset Results}
-Table~\ref{tab:all-datasets} summarizes the canonical local benchmark matrix. C-MAPSS FD001 remains the full comparison point against the direct and fixed recurrent baselines, while the all-dataset matrix now includes adaptive, frozen LLM, and task-adapted LLM results for every local dataset. IMS results are reported on validation folds because those runs do not provide a separate official test split under the present experimental protocol.
+\subsection{Full Benchmark Matrix}
+Table~\ref{tab:all-datasets} is the center of the paper. It shows that the adaptive model beats both LLM baselines across every matched local comparison: all four C-MAPSS subsets, all three IMS runs, and the reduced Paderborn machinery benchmark. IMS rows are validation results because those runs do not provide a separate official test split under the present protocol.
 
 \begin{table*}[t]
 \centering
@@ -34,9 +34,33 @@ CMAPSS FD004 & Test & 0.9280 & 0.3219 & 0.4988 \\
 IMS 1st\_test & Validation & 0.9773 & 0.2481 & 0.2481 \\
 IMS 2nd\_test & Validation & 0.9501 & 0.2447 & 0.2447 \\
 IMS 4th\_test/txt & Validation & 0.9417 & 0.2495 & 0.2495 \\
+Paderborn (reduced) & Validation & 0.2811 & 0.1838 & 0.1838 \\
 \bottomrule
 \end{tabular}
 \end{table*}
+
+\subsection{Detailed FD001 Comparison}
+\begin{table}[t]
+\centering
+\small
+\caption{C-MAPSS FD001 test-set results}
+\label{tab:results-main}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & Accuracy & Macro F1 & Avg. depth & Latency (ms) \\
+\midrule
+Direct baseline & 0.9746 & 0.8609 & 0.00 & n/a \\
+Fixed-depth loop & 0.9877 & 0.8891 & 6.00 & n/a \\
+Adaptive looped model & 0.9838 & 0.9183 & 1.21 & 0.17 \\
+Text-serialized LLM baseline & 0.9136 & 0.3183 & 0.00 & 16.95 \\
+Task-adapted LLM baseline & 0.9098 & 0.3454 & 0.00 & 32.11 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+FD001 remains the clearest single example of the project claim. The adaptive model improves macro F1 by 2.9 points over the fixed-depth loop while using only about 20.2\% of that model's average depth budget. Relative to the frozen text-serialized LLM baseline, the adaptive model improves macro F1 by roughly 60 points while reducing measured CPU latency from 16.95\,ms/sample to 0.17\,ms/sample. The stronger task-adapted LLM still reaches only 0.3454 macro F1, leaving the adaptive model ahead by 57.3 points even after direct maintenance fine-tuning. This corresponds to an approximate 79.8\% reduction in loop computation relative to the fixed-depth recurrent baseline and roughly a 189x latency advantage over the task-adapted LLM.
 
 \begin{figure}[t]
 \centering
@@ -44,6 +68,9 @@ IMS 4th\_test/txt & Validation & 0.9417 & 0.2495 & 0.2495 \\
 \caption{Primary C-MAPSS FD001 comparison. The adaptive loop achieves the best macro F1 score while using far less average loop depth than the fixed-depth recurrent model and clearly outperforming both frozen and task-adapted text-serialized LLM baselines.}
 \label{fig:cmapss-comparison}
 \end{figure}
+
+\subsection{C-MAPSS Family Results}
+Across the full C-MAPSS family, the adaptive model preserves its advantage on every official test split. FD002, FD003, and FD004 matter because they change operating conditions and fault mixtures. Even under those shifts, the task-adapted LLM remains well below the adaptive model, with the gap ranging from 0.3815 macro F1 on FD003 to 0.5356 on FD002. This makes the FD001 result representative rather than isolated.
 
 \subsection{Validation and Generalization}
 On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. The frozen LLM baseline, despite strong nominal accuracy from the dominant normal class, collapsed on macro F1 because it failed to separate warning and critical states reliably. The stronger task-adapted LLM narrowed that gap only slightly, rising from 0.3183 to 0.3454 macro F1 on the FD001 test set. This is the central comparison of the project: the looped numeric model handled minority degradation states far better than both generic and task-adapted text-transformer baselines while also avoiding the heavy latency cost of tokenization and transformer inference. The pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance without paying the cost of text-serialized inference.
@@ -62,11 +89,11 @@ On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, w
 \label{fig:adaptive-confusion}
 \end{figure}
 
-\subsection{Secondary Dataset Status}
-The IMS pipeline uses extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the reported IMS results use validation-only evaluation. Under that setup, the adaptive model remained strong across the first, second, and fourth IMS runs, while both frozen and task-adapted LLM baselines stayed clustered near macro F1 values of 0.24--0.25. On the C-MAPSS subsets, task adaptation did improve DistilBERT materially over the frozen baseline, but the adaptive loop still retained a large margin on every official test split. The main quantitative claims remain anchored on C-MAPSS because it provides official train/test splits, but the full matrix shows that the adaptive-versus-task-adapted-LLM gap is not limited to a single FD001 slice.
+\subsection{IMS Results}
+The IMS pipeline uses extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the reported IMS results use validation-only evaluation. Under that setup, the adaptive model remained strong across the first, second, and fourth IMS runs, while both frozen and task-adapted LLM baselines stayed clustered near macro F1 values of 0.24--0.25. The absolute numbers differ from C-MAPSS because the labels are derived from failure progression rather than published directly, but the ordering is stable: the looped model still separates degradation stages much better than either text-serialized LLM variant.
 
-\subsection{Cross-Domain Extension Results}
-Table~\ref{tab:extension-results} summarizes the additional domain checks added after the main C-MAPSS study. The Paderborn benchmark is the completed new-domain loop-versus-LLM comparison because all three model families finished under the same reduced machinery split. There, the adaptive loop improved macro F1 by 0.0973 over both LLM baselines while remaining about 556x faster than the frozen LLM and about 308x faster than the task-adapted LLM on sample latency.
+\subsection{Cross-Domain Results}
+Table~\ref{tab:extension-results} summarizes the two cross-domain checks outside the engine and bearing run-to-failure families. Paderborn is the completed new-domain loop-versus-LLM comparison because all three model families finished under the same reduced machinery split. There, the adaptive loop improved macro F1 by 0.0973 over both LLM baselines while remaining about 556x faster than the frozen LLM and about 308x faster than the task-adapted LLM on sample latency.
 
 The HVAC extension is reported as a looped-model transfer study rather than an LLM comparison. On the reduced asset-stratified split, the adaptive model reached validation macro F1 of 0.6000 and achieved perfect recall on the critical class. Because the matching HVAC LLM runs were not practical on the available laptop CPU, they are omitted from the final benchmark matrix rather than reported as incomplete entries.
 

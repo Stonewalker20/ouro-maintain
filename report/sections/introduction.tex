@@ -4,7 +4,7 @@ Predictive maintenance systems aim to detect degradation early enough to reduce 
 
 That setting matches the strengths of looped latent reasoning: the model can refine an internal state iteratively and stop early when the evidence is already clear. Methods such as adaptive computation time and recurrent latent refinement show that depth itself can be a learned resource rather than a fixed architectural constant \cite{Graves2016ACT,Dehghani2018UniversalTransformers,Zhu2025Ouro}.
 
-This work studies whether an adaptive looped architecture can improve maintenance triage on sequential industrial sensor data. The central hypothesis is that recurrent latent computation with learned depth allocation will produce better calibration and compute-efficiency tradeoffs than fixed-depth baselines on difficult failure windows, while remaining competitive on easier cases. IMS is included as a secondary benchmark because it stresses a slightly different failure regime based on vibration snapshots rather than engine telemetry \cite{NASAIMSBearings}.
+This work studies whether an adaptive looped architecture can improve maintenance triage on sequential industrial sensor data across multiple equipment domains. The central hypothesis is that recurrent latent computation with learned depth allocation will produce better calibration and compute-efficiency tradeoffs than fixed-depth baselines on difficult failure windows, while remaining competitive on easier cases. The evaluation therefore spans engine telemetry, run-to-failure bearing vibration, machinery state monitoring, and HVAC fault trajectories rather than relying on a single benchmark family \cite{NASAIMSBearings}.
 
 The paper makes three contributions. First, it defines a predictive-maintenance formulation that maps sensor windows to health state, urgency, and recommended action. Second, it proposes an Ouro-inspired model with shared iterative computation and early exit. Third, it establishes an evaluation protocol spanning classification quality, compute use, and maintenance utility.
 
@@ -15,8 +15,8 @@ For this project, the central research question is whether a looped transformer-
 \begin{itemize}
     \item A maintenance-oriented reformulation of looped reasoning for health monitoring and triage.
     \item A reproducible architecture that separates window encoding, latent recurrence, and adaptive exit.
-    \item A completed benchmark suite using C-MAPSS and IMS to compare direct, fixed-depth, adaptive, and LLM-based alternatives.
+    \item A completed benchmark suite spanning C-MAPSS, IMS, Paderborn, and LBNL HVAC data, with looped-model comparisons against task-specific LLM baselines wherever matched runs completed under the same protocol.
 \end{itemize}
 
 \subsection{Scope}
-The empirical core of the paper is the C-MAPSS benchmark suite, where FD001 serves as the full comparison point against direct, fixed-depth, adaptive, and text-serialized LLM baselines, and FD002--FD004 extend the adaptive model across additional official test splits. IMS is reported as a secondary benchmark with stratified validation because its labels are derived from failure progression rather than provided directly.
+The report is organized as a benchmark matrix rather than a single-dataset case study. C-MAPSS FD001 serves as the deepest comparison because it includes direct, fixed-depth, adaptive, frozen-LLM, and task-adapted-LLM baselines on an official test split. FD002--FD004, three IMS runs, and the reduced Paderborn benchmark test whether the adaptive-versus-LLM ordering persists across additional datasets. The reduced LBNL HVAC benchmark is reported as a transfer study for the looped model because matched HVAC LLM runs were not practical on the available laptop CPU.
