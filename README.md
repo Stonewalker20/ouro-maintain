@@ -2,6 +2,32 @@
 
 LoopedLM is scoped as **OuroMaintain: Adaptive Looped Reasoning for Predictive Maintenance**.
 
+## At a glance
+
+- Goal: predict machine health and recommend maintenance actions from telemetry
+- Main question: can a task-specific looped transformer beat a task-specific LLM on maintenance data?
+- Current result: yes, on the local C-MAPSS and IMS benchmark matrix
+
+## Visual overview
+
+### Main benchmark result
+
+The adaptive looped model was the strongest overall model on the primary C-MAPSS benchmark while also staying much faster than the LLM baselines.
+
+![C-MAPSS model comparison](report/figures/cmapss_comparison.png)
+
+### Adaptive model behavior during training
+
+This figure shows how the adaptive model improved over training while learning to use shallow average depth instead of always spending maximum compute.
+
+![Adaptive training history](report/figures/adaptive_history.png)
+
+### Health-state confusion matrix
+
+This confusion matrix makes the final prediction behavior easier to read than raw metric tables alone.
+
+![Adaptive confusion matrix](report/figures/adaptive_confusion.png)
+
 The initial target is a focused MVP:
 
 - Input: rolling telemetry windows plus maintenance context
@@ -172,6 +198,23 @@ The primary completed benchmark is C-MAPSS FD001. The best run is the adaptive l
 - adaptive-loop test macro F1: `0.9183`
 - adaptive average test depth: `1.21` versus `6.0` for the fixed loop
 - LLM baseline average sample latency: `16.95 ms` versus `0.17 ms` for the adaptive model
+
+## What the project does
+
+```text
+sensor window
+  -> looped model
+  -> health label
+  -> maintenance action
+  -> likely subsystem
+```
+
+In plain terms:
+
+- read recent machine telemetry
+- decide whether the equipment looks normal, degrading, or critical
+- suggest what to do next
+- spend less compute on easy cases and more on ambiguous ones
 
 See [docs/results-summary.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/results-summary.md:1) for the tracked metric table.
 See [docs/all-results.md](/Users/cordellstonecipher/Projects/LoopedLM/docs/all-results.md:1) for the full canonical local benchmark matrix across all completed local datasets.
