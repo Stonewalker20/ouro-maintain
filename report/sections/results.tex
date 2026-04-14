@@ -66,23 +66,25 @@ On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, w
 The IMS pipeline uses extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the reported IMS results use validation-only evaluation. Under that setup, the adaptive model remained strong across the first, second, and fourth IMS runs, while both frozen and task-adapted LLM baselines stayed clustered near macro F1 values of 0.24--0.25. On the C-MAPSS subsets, task adaptation did improve DistilBERT materially over the frozen baseline, but the adaptive loop still retained a large margin on every official test split. The main quantitative claims remain anchored on C-MAPSS because it provides official train/test splits, but the full matrix shows that the adaptive-versus-task-adapted-LLM gap is not limited to a single FD001 slice.
 
 \subsection{Cross-Domain Extension Results}
-Table~\ref{tab:extension-results} summarizes the additional domain checks added after the main C-MAPSS study. The Paderborn benchmark is the cleanest new comparison because all three model families completed under the same reduced machinery split. The adaptive loop improved macro F1 by 0.0973 over both LLM baselines while remaining about 556x faster than the frozen LLM and about 308x faster than the task-adapted LLM on sample latency.
+Table~\ref{tab:extension-results} summarizes the additional domain checks added after the main C-MAPSS study. The Paderborn benchmark is the completed new-domain loop-versus-LLM comparison because all three model families finished under the same reduced machinery split. There, the adaptive loop improved macro F1 by 0.0973 over both LLM baselines while remaining about 556x faster than the frozen LLM and about 308x faster than the task-adapted LLM on sample latency.
 
-The HVAC extension behaved differently. On the reduced asset-stratified split, the adaptive model reached validation macro F1 of 0.6000 and achieved perfect recall on the critical class, but the frozen and task-adapted DistilBERT runs remained too slow to finish under the same HVAC protocol on the available CPU-only environment. For that reason, the current report treats HVAC as a completed looped-model extension and Paderborn as the completed new-domain loop-versus-LLM comparison.
+The HVAC extension is reported as a looped-model transfer study rather than an LLM comparison. On the reduced asset-stratified split, the adaptive model reached validation macro F1 of 0.6000 and achieved perfect recall on the critical class. Because the matching HVAC LLM runs were not practical on the available laptop CPU, they are omitted from the final benchmark matrix rather than reported as incomplete entries.
 
 \begin{table}[t]
 \centering
 \small
 \caption{Cross-domain extension results}
 \label{tab:extension-results}
-\begin{tabular}{@{}lccc@{}}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lcc@{}}
 \toprule
-Benchmark & Adaptive & Frozen LLM & Task-adapted LLM \\
+Benchmark & Result Type & Reported Metric \\
 \midrule
-LBNL FCU (reduced, val.) & 0.6000 & n/a & n/a \\
-Paderborn (reduced, val.) & 0.2811 & 0.1838 & 0.1838 \\
+Paderborn (reduced, val.) & Adaptive / Frozen / Task LLM & 0.2811 / 0.1838 / 0.1838 \\
+LBNL FCU (reduced, val.) & Adaptive loop transfer & 0.6000 \\
 \bottomrule
 \end{tabular}
+\par}
 \end{table}
 
 \subsection{Demo Deliverable}

@@ -71,18 +71,18 @@
 \end{frame}
 
 \begin{frame}{New Domain Checks}
-  \begin{tabular}{lccc}
+  \begin{tabular}{lcc}
     \toprule
-    Benchmark & Adaptive & Frozen & Task \\
+    Benchmark & What We Report & Macro F1 \\
     \midrule
-    Paderborn & 0.2811 & 0.1838 & 0.1838 \\
-    LBNL FCU & 0.6000 & n/a & n/a \\
+    Paderborn & Adaptive / Frozen / Task LLM & 0.2811 / 0.1838 / 0.1838 \\
+    LBNL FCU & Adaptive loop transfer & 0.6000 \\
     \bottomrule
   \end{tabular}
 \vspace{0.4cm}
   \begin{itemize}
     \item On machinery data, the looped model still beat both LLM baselines.
-    \item On HVAC data, the looped model worked under a stricter equipment-level split.
-    \item The full HVAC LLM comparison was too slow to finish on the current CPU-only setup.
+    \item On HVAC data, the looped model still transferred under a stricter equipment-level split.
+    \item We removed the unfinished HVAC LLM comparison instead of leaving `n/a` rows in the final story.
   \end{itemize}
 \end{frame}
