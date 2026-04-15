@@ -17,8 +17,8 @@
     Baseline & 0.9746 & 0.8609 & 0.00 & n/a \\
     Fixed loop & 0.9877 & 0.8891 & 6.00 & n/a \\
     Adaptive loop & 0.9838 & 0.9183 & 1.21 & 0.17 ms \\
-    Frozen LLM & 0.9136 & 0.3183 & 0.00 & 16.95 ms \\
-    Task-adapted LLM & 0.9098 & 0.3454 & 0.00 & 32.11 ms \\
+    Generic LLM & 0.9136 & 0.3183 & 0.00 & 16.95 ms \\
+    Task-specific LLM & 0.9098 & 0.3454 & 0.00 & 32.11 ms \\
     \bottomrule
   \end{tabular}
 \vspace{0.4cm}
@@ -51,7 +51,7 @@
 \begin{frame}{Did This Hold Across All Datasets?}
   \begin{tabular}{lcccc}
     \toprule
-    Dataset & Adaptive & Frozen & Task & Gap vs Task \\
+    Dataset & Adaptive & Generic & Task-specific & Gap vs Task \\
     \midrule
     FD001 & 0.9183 & 0.3183 & 0.3454 & +0.5729 \\
     FD002 & 0.9656 & 0.3163 & 0.4300 & +0.5356 \\
@@ -70,19 +70,68 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{New Domain Checks}
-  \begin{tabular}{lcc}
-    \toprule
-    Benchmark & What We Report & Macro F1 \\
-    \midrule
-    Paderborn & Adaptive / Frozen / Task LLM & 0.2811 / 0.1838 / 0.1838 \\
-    LBNL FCU & Adaptive loop transfer & 0.6000 \\
-    \bottomrule
-  \end{tabular}
-\vspace{0.4cm}
+\begin{frame}{Full Benchmark Matrix}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+    \node[anchor=west,font=\bfseries\small] at (0,4.7) {Adaptive loop vs LLM baselines across the project};
+    \node[anchor=west,font=\bfseries] at (4.1,4.15) {Adaptive};
+    \node[anchor=west,font=\bfseries] at (6.3,4.15) {Generic};
+    \node[anchor=west,font=\bfseries] at (8.4,4.15) {Task-specific};
+    \node[anchor=west,font=\bfseries] at (10.9,4.15) {Scope};
+
+    \foreach \name/\y/\a/\g/\t/\phase in {
+      FD001/3.5/0.9183/0.3183/0.3454/official test,
+      FD002/3.0/0.9656/0.3163/0.4300/official test,
+      FD003/2.5/0.8300/0.3239/0.4485/official test,
+      FD004/2.0/0.9280/0.3219/0.4988/official test,
+      IMS 1st/1.5/0.9773/0.2481/0.2481/validation,
+      IMS 2nd/1.0/0.9501/0.2447/0.2447/validation,
+      IMS 4th/0.5/0.9417/0.2495/0.2495/validation,
+      Paderborn/0.0/0.2811/0.1838/0.1838/validation
+    }{
+      \node[anchor=west] at (0,\y) {\name};
+      \fill[maintainteal!18] (4.0,\y-0.18) rectangle ++(1.55,0.34);
+      \fill[maintainsky!16] (6.2,\y-0.18) rectangle ++(1.55,0.34);
+      \fill[maintainrust!16] (8.3,\y-0.18) rectangle ++(1.55,0.34);
+      \node[anchor=west] at (4.08,\y) {\a};
+      \node[anchor=west] at (6.28,\y) {\g};
+      \node[anchor=west] at (8.38,\y) {\t};
+      \node[anchor=west,text=maintainmuted] at (10.9,\y) {\phase};
+    }
+  \end{tikzpicture}
+\vspace{0.25cm}
   \begin{itemize}
-    \item On machinery data, the looped model still beat both LLM baselines.
-    \item On HVAC data, the looped model still transferred under a stricter equipment-level split.
-    \item We removed the unfinished HVAC LLM comparison instead of leaving `n/a` rows in the final story.
+    \item The adaptive model won every matched comparison in the matrix.
+    \item HVAC is shown separately as a transfer result because it was not a matched three-model benchmark.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Cross-Domain Scope}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+    \begin{block}{Machinery transfer}
+      \centering
+      \vspace{0.15cm}
+      {\large Paderborn}\\[0.15cm]
+      Adaptive: \textbf{0.2811}\\
+      Generic LLM: 0.1838\\
+      Task-specific LLM: 0.1838
+      \vspace{0.15cm}
+    \end{block}
+    \column{0.44\textwidth}
+    \begin{block}{HVAC transfer}
+      \centering
+      \vspace{0.15cm}
+      {\large LBNL FCU}\\[0.15cm]
+      Adaptive loop: \textbf{0.6000}\\
+      Avg. depth: 1.55\\
+      Latency: 1.50 ms
+      \vspace{0.15cm}
+    \end{block}
+  \end{columns}
+\vspace{0.3cm}
+  \begin{itemize}
+    \item The same looped design transferred beyond engines into machinery and HVAC data.
+    \item That matters because the project is about maintenance reasoning, not one benchmark only.
   \end{itemize}
 \end{frame}

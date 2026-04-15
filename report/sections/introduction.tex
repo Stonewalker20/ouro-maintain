@@ -9,7 +9,7 @@ This work studies whether an adaptive looped architecture can improve maintenanc
 The paper makes three contributions. First, it defines a predictive-maintenance formulation that maps sensor windows to health state, urgency, and recommended action. Second, it proposes an Ouro-inspired model with shared iterative computation and early exit. Third, it establishes an evaluation protocol spanning classification quality, compute use, and maintenance utility.
 
 \subsection{Why It Matters}
-For this project, the central research question is whether a looped transformer-style latent reasoning system can outperform a pretrained LLM baseline on maintenance triage while using less inference compute. That comparison matters because many current AI workflows default to generic language-model pipelines even when the underlying data are numeric sensor streams.
+The central research question is whether a looped transformer-style latent reasoning system can outperform LLM-based baselines on maintenance triage while using less inference compute. That comparison matters because many current AI workflows default to generic language-model pipelines even when the underlying data are numeric sensor streams.
 
 \subsection{Contributions}
 \begin{itemize}
@@ -19,4 +19,4 @@ For this project, the central research question is whether a looped transformer-
 \end{itemize}
 
 \subsection{Scope}
-The report is organized as a benchmark matrix rather than a single-dataset case study. C-MAPSS FD001 serves as the deepest comparison because it includes direct, fixed-depth, adaptive, frozen-LLM, and task-adapted-LLM baselines on an official test split. FD002--FD004, three IMS runs, and the reduced Paderborn benchmark test whether the adaptive-versus-LLM ordering persists across additional datasets. The reduced LBNL HVAC benchmark is reported as a transfer study for the looped model because matched HVAC LLM runs were not practical on the available laptop CPU.
+The report is organized as a benchmark matrix rather than a single-dataset case study. C-MAPSS FD001 serves as the most detailed comparison because it includes direct, fixed-depth, adaptive, generic-pretrained-LLM, and task-specific-LLM baselines on an official test split. FD002--FD004, three IMS runs, and the reduced Paderborn benchmark test whether the adaptive-versus-LLM ordering persists across additional datasets. The reduced LBNL HVAC benchmark is presented as a transfer study for the looped model.

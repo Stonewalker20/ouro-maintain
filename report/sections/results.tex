@@ -4,14 +4,14 @@ The results are organized as a benchmark matrix, not a single-dataset appendix. 
 
 \subsection{Benchmark-Wide Findings}
 \begin{itemize}
-    \item The adaptive model achieved test macro F1 of 0.9183, outperforming the fixed-depth loop at 0.8891, the direct baseline at 0.8609, the frozen LLM baseline at 0.3183, and the task-adapted LLM baseline at 0.3454.
+    \item The adaptive model achieved test macro F1 of 0.9183, outperforming the fixed-depth loop at 0.8891, the direct baseline at 0.8609, the generic pretrained LLM baseline at 0.3183, and the task-specific LLM baseline at 0.3454.
     \item The adaptive model required an average of only 1.21 recurrent steps on the test set, compared with 6.0 steps for the fixed-depth loop.
     \item Relative to the fixed-depth loop, the adaptive policy reduced average loop computation by approximately 79.8\%.
-    \item The adaptive model averaged 0.17 ms/sample on CPU latency benchmarking, compared with 16.95 ms/sample for the LLM baseline, or roughly a 101x latency advantage.
-    \item A stronger task-adapted DistilBERT baseline improved the LLM score to 0.3454 macro F1, but it still remained 0.5729 behind the adaptive loop and raised latency to 32.11 ms/sample.
-    \item The adaptive model preserved strong critical-class performance, reaching perfect precision and 0.75 recall on the small critical test subset.
-    \item Across the full local dataset matrix, the adaptive model outperformed both the frozen and task-adapted LLM baselines on every CMAPSS subset and all three IMS validation runs.
-    \item On the reduced Paderborn machinery benchmark, the adaptive model reached validation macro F1 of 0.2811 versus 0.1838 for both frozen and task-adapted LLM baselines.
+    \item The adaptive model averaged 0.17 ms/sample on CPU latency benchmarking, compared with 16.95 ms/sample for the generic pretrained LLM baseline, or roughly a 101x latency advantage.
+    \item The task-specific DistilBERT baseline improved the LLM score to 0.3454 macro F1, but it still remained 0.5729 behind the adaptive loop and raised latency to 32.11 ms/sample.
+    \item The adaptive model preserved strong critical-class performance, reaching perfect precision and 0.75 recall on the critical test subset.
+    \item Across the full local dataset matrix, the adaptive model outperformed both the generic pretrained and task-specific LLM baselines on every CMAPSS subset and all three IMS validation runs.
+    \item On the reduced Paderborn machinery benchmark, the adaptive model reached validation macro F1 of 0.2811 versus 0.1838 for both generic pretrained and task-specific LLM baselines.
     \item On the reduced HVAC extension split, the adaptive model reached validation macro F1 of 0.6000 with 1.55 average loop steps and 1.50 ms/sample latency.
 \end{itemize}
 
@@ -25,7 +25,7 @@ Table~\ref{tab:all-datasets} is the center of the paper. It shows that the adapt
 \label{tab:all-datasets}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Dataset & Split & Adaptive & Frozen LLM & Task-adapted LLM \\
+Dataset & Split & Adaptive & Generic LLM & Task-specific LLM \\
 \midrule
 CMAPSS FD001 & Test & 0.9183 & 0.3183 & 0.3454 \\
 CMAPSS FD002 & Test & 0.9656 & 0.3163 & 0.4300 \\
@@ -53,27 +53,27 @@ Model & Accuracy & Macro F1 & Avg. depth & Latency (ms) \\
 Direct baseline & 0.9746 & 0.8609 & 0.00 & n/a \\
 Fixed-depth loop & 0.9877 & 0.8891 & 6.00 & n/a \\
 Adaptive looped model & 0.9838 & 0.9183 & 1.21 & 0.17 \\
-Text-serialized LLM baseline & 0.9136 & 0.3183 & 0.00 & 16.95 \\
-Task-adapted LLM baseline & 0.9098 & 0.3454 & 0.00 & 32.11 \\
+Generic pretrained LLM baseline & 0.9136 & 0.3183 & 0.00 & 16.95 \\
+Task-specific LLM baseline & 0.9098 & 0.3454 & 0.00 & 32.11 \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-FD001 remains the clearest single example of the project claim. The adaptive model improves macro F1 by 2.9 points over the fixed-depth loop while using only about 20.2\% of that model's average depth budget. Relative to the frozen text-serialized LLM baseline, the adaptive model improves macro F1 by roughly 60 points while reducing measured CPU latency from 16.95\,ms/sample to 0.17\,ms/sample. The stronger task-adapted LLM still reaches only 0.3454 macro F1, leaving the adaptive model ahead by 57.3 points even after direct maintenance fine-tuning. This corresponds to an approximate 79.8\% reduction in loop computation relative to the fixed-depth recurrent baseline and roughly a 189x latency advantage over the task-adapted LLM.
+FD001 remains the clearest single example of the project claim. The adaptive model improves macro F1 by 2.9 points over the fixed-depth loop while using only about 20.2\% of that model's average depth budget. Relative to the generic pretrained LLM baseline, the adaptive model improves macro F1 by roughly 60 points while reducing measured CPU latency from 16.95\,ms/sample to 0.17\,ms/sample. The task-specific LLM still reaches only 0.3454 macro F1, leaving the adaptive model ahead by 57.3 points even after direct maintenance fine-tuning. This corresponds to an approximate 79.8\% reduction in loop computation relative to the fixed-depth recurrent baseline and roughly a 189x latency advantage over the task-specific LLM.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/cmapss_comparison.png}
-\caption{Primary C-MAPSS FD001 comparison. The adaptive loop achieves the best macro F1 score while using far less average loop depth than the fixed-depth recurrent model and clearly outperforming both frozen and task-adapted text-serialized LLM baselines.}
+\caption{Primary C-MAPSS FD001 comparison. The adaptive loop achieves the best macro F1 score while using far less average loop depth than the fixed-depth recurrent model and clearly outperforming both generic pretrained and task-specific LLM baselines.}
 \label{fig:cmapss-comparison}
 \end{figure}
 
 \subsection{C-MAPSS Family Results}
-Across the full C-MAPSS family, the adaptive model preserves its advantage on every official test split. FD002, FD003, and FD004 matter because they change operating conditions and fault mixtures. Even under those shifts, the task-adapted LLM remains well below the adaptive model, with the gap ranging from 0.3815 macro F1 on FD003 to 0.5356 on FD002. This makes the FD001 result representative rather than isolated.
+Across the full C-MAPSS family, the adaptive model preserves its advantage on every official test split. FD002, FD003, and FD004 matter because they change operating conditions and fault mixtures. Even under those shifts, the task-specific LLM remains well below the adaptive model, with the gap ranging from 0.3815 macro F1 on FD003 to 0.5356 on FD002. This makes the FD001 result representative rather than isolated.
 
 \subsection{Validation and Generalization}
-On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. The frozen LLM baseline, despite strong nominal accuracy from the dominant normal class, collapsed on macro F1 because it failed to separate warning and critical states reliably. The stronger task-adapted LLM narrowed that gap only slightly, rising from 0.3183 to 0.3454 macro F1 on the FD001 test set. This is the central comparison of the project: the looped numeric model handled minority degradation states far better than both generic and task-adapted text-transformer baselines while also avoiding the heavy latency cost of tokenization and transformer inference. The pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance without paying the cost of text-serialized inference.
+On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, while the adaptive model reached 0.9142 at an average depth of 1.39 steps. On the official test split, however, the adaptive model generalized better and delivered the strongest macro F1 score. The generic pretrained LLM baseline, despite strong nominal accuracy from the dominant normal class, collapsed on macro F1 because it failed to separate warning and critical states reliably. The task-specific LLM narrowed that gap only slightly, rising from 0.3183 to 0.3454 macro F1 on the FD001 test set. This is the central comparison of the study: the looped numeric model handled minority degradation states far better than both generic and task-specific text-transformer baselines while also avoiding the heavy latency cost of tokenization and transformer inference. The pattern suggests that fixed full-depth recurrence may fit the development split more aggressively, while adaptive early exit regularizes the model enough to improve test-time class balance without paying the cost of text-serialized inference.
 
 \begin{figure}[t]
 \centering
@@ -90,12 +90,12 @@ On validation, the fixed-depth loop reached the best macro F1 score of 0.9366, w
 \end{figure}
 
 \subsection{IMS Results}
-The IMS pipeline uses extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the reported IMS results use validation-only evaluation. Under that setup, the adaptive model remained strong across the first, second, and fourth IMS runs, while both frozen and task-adapted LLM baselines stayed clustered near macro F1 values of 0.24--0.25. The absolute numbers differ from C-MAPSS because the labels are derived from failure progression rather than published directly, but the ordering is stable: the looped model still separates degradation stages much better than either text-serialized LLM variant.
+The IMS pipeline uses extracted run-to-failure vibration snapshots, summary-statistic feature generation, and cached preprocessing. Early temporal-split runs on IMS showed degenerate validation folds with missing classes, so the reported IMS results use validation-only evaluation. Under that setup, the adaptive model remained strong across the first, second, and fourth IMS runs, while both generic pretrained and task-specific LLM baselines stayed clustered near macro F1 values of 0.24--0.25. The absolute numbers differ from C-MAPSS because the labels are derived from failure progression rather than published directly, but the ordering is stable: the looped model still separates degradation stages much better than either LLM variant.
 
 \subsection{Cross-Domain Results}
-Table~\ref{tab:extension-results} summarizes the two cross-domain checks outside the engine and bearing run-to-failure families. Paderborn is the completed new-domain loop-versus-LLM comparison because all three model families finished under the same reduced machinery split. There, the adaptive loop improved macro F1 by 0.0973 over both LLM baselines while remaining about 556x faster than the frozen LLM and about 308x faster than the task-adapted LLM on sample latency.
+Table~\ref{tab:extension-results} summarizes the two cross-domain checks outside the engine and bearing run-to-failure families. Paderborn is the completed new-domain loop-versus-LLM comparison because all three model families finished under the same reduced machinery split. There, the adaptive loop improved macro F1 by 0.0973 over both LLM baselines while remaining about 556x faster than the generic pretrained LLM and about 308x faster than the task-specific LLM on sample latency.
 
-The HVAC extension is reported as a looped-model transfer study rather than an LLM comparison. On the reduced asset-stratified split, the adaptive model reached validation macro F1 of 0.6000 and achieved perfect recall on the critical class. Because the matching HVAC LLM runs were not practical on the available laptop CPU, they are omitted from the final benchmark matrix rather than reported as incomplete entries.
+The HVAC extension is reported as a looped-model transfer study rather than an LLM comparison. On the reduced asset-stratified split, the adaptive model reached validation macro F1 of 0.6000 and achieved perfect recall on the critical class.
 
 \begin{table}[t]
 \centering

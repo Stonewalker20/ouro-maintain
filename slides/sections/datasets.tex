@@ -1,23 +1,36 @@
 \section{Datasets}
 
-\begin{frame}{Data We Used}
-  \begin{itemize}
-    \item \textbf{C-MAPSS}: engine sensor data with clear train and test splits.
-    \item \textbf{IMS}: bearing vibration data collected as the bearings wear out.
-    \item \textbf{LBNL FCU}: HVAC fault data from fan-coil units.
-    \item \textbf{Paderborn}: machinery bearing data with healthy and damaged states.
-  \end{itemize}
+\begin{frame}{Project Scope}
+  \centering
+  \begin{tikzpicture}[every node/.style={font=\small}]
+    \node[draw=maintainsky, fill=maintainsky!8, rounded corners=8pt, minimum width=3.2cm, minimum height=2.3cm, align=center] (eng) at (0,0) {\textbf{Spacecraft / Engines}\\C-MAPSS\\sensor streams\\official test splits};
+    \node[draw=maintainteal, fill=maintainteal!8, rounded corners=8pt, minimum width=3.2cm, minimum height=2.3cm, align=center] (bear) at (4.2,0) {\textbf{Machinery}\\IMS + Paderborn\\bearing vibration\\damage progression};
+    \node[draw=ougold!80!black, fill=ougold!12, rounded corners=8pt, minimum width=3.2cm, minimum height=2.3cm, align=center] (hvac) at (8.4,0) {\textbf{HVAC}\\LBNL FCU\\building faults\\equipment-level splits};
+    \node[draw=maintainrust, fill=maintainrust!8, rounded corners=8pt, minimum width=3.8cm, minimum height=1.4cm, align=center] (goal) at (4.2,-2.5) {\textbf{One question across all of them}\\Does a looped maintenance model beat LLM-based baselines?};
+    \draw[-{Latex[length=2.5mm]}, line width=0.8pt, maintainmuted] (eng.south) -- (goal.north west);
+    \draw[-{Latex[length=2.5mm]}, line width=0.8pt, maintainmuted] (bear.south) -- (goal.north);
+    \draw[-{Latex[length=2.5mm]}, line width=0.8pt, maintainmuted] (hvac.south) -- (goal.north east);
+  \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Why Four Datasets}
-  \begin{tabular}{>{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}p{5cm}}
-    \toprule
-    Dataset & What it gives us & Why we used it \\
-    \midrule
-    C-MAPSS & Clean benchmark with standard labels & Main head-to-head comparison \\
-    IMS & Harder real wear progression data & Checks whether the result holds outside one benchmark \\
-    LBNL FCU & Building-system faults with known fault types & Tests the idea on HVAC equipment \\
-    Paderborn & Healthy and damaged bearing states & Tests the idea on machinery data \\
-    \bottomrule
-  \end{tabular}
+\begin{frame}{Why These Datasets Matter}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \begin{block}{Core benchmark matrix}
+      \begin{itemize}
+        \item \textbf{FD001-FD004}: full head-to-head test
+        \item \textbf{IMS}: wear progression check
+        \item \textbf{Paderborn}: machinery transfer check
+      \end{itemize}
+    \end{block}
+    \column{0.48\textwidth}
+    \begin{block}{Why this is stronger}
+      \begin{itemize}
+        \item not just one dataset
+        \item not just one kind of equipment
+        \item not just one train/test split
+        \item shows where the model transfers well
+      \end{itemize}
+    \end{block}
+  \end{columns}
 \end{frame}

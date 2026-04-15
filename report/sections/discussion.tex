@@ -2,7 +2,7 @@
 The results are most meaningful when interpreted in practical maintenance terms rather than only as aggregate ML metrics. In that framing, the strongest outcome is that the adaptive looped model preserves useful recall on critical failures while reducing average internal depth on routine windows. This behavior supports the claim that iterative latent reasoning is useful for maintenance triage, where most cases are straightforward but a small subset requires deeper inspection.
 
 \subsection{Broader Impact and Future Work}
-This project suggests that maintenance-oriented AI systems do not necessarily benefit from routing numeric telemetry through generic text-first LLM pipelines. A task-specific looped model can deliver better class-balanced performance and much lower latency while remaining easier to interpret in operational terms. More broadly, the work supports the idea that adaptive internal computation is valuable when decisions involve uneven difficulty across examples.
+These results suggest that maintenance-oriented AI systems do not necessarily benefit from routing numeric telemetry through generic text-first LLM pipelines. A task-specific looped model can deliver better class-balanced performance and much lower latency while remaining easier to interpret in operational terms. More broadly, the work supports the idea that adaptive internal computation is valuable when decisions involve uneven difficulty across examples.
 
 \subsection{Threats to Validity}
 The main threats are dataset bias, label construction choices, and split leakage. C-MAPSS thresholds can materially change class balance, while IMS labels are derived rather than observed directly. The HVAC labels are filename-driven approximations rather than technician annotations, and the reduced Paderborn benchmark uses a state-classification protocol rather than run-to-failure forecasting. Cross-dataset comparisons therefore provide evidence of generalization behavior rather than a perfect apples-to-apples comparison of supervisory signal.
@@ -12,7 +12,7 @@ The main threats are dataset bias, label construction choices, and split leakage
     \item On C-MAPSS FD001, hard windows did consume more average loop depth than easy windows, while the overall test average remained low at 1.21 steps.
     \item Depth savings did not come purely from overconfident collapsing behavior: the adaptive model improved macro F1 over both the direct and fixed-depth recurrent baselines on the official test split.
     \item The largest residual error mode remained confusion between normal and warning states rather than catastrophic collapse across all classes.
-    \item The full matrix preserved the same qualitative pattern as FD001: every CMAPSS subset and all IMS runs favored the adaptive model over both the frozen and task-adapted LLM baselines by a large macro-F1 margin.
+    \item The full matrix preserved the same qualitative pattern as FD001: every CMAPSS subset and all IMS runs favored the adaptive model over both the generic pretrained and task-specific LLM baselines by a large macro-F1 margin.
     \item The same pattern extended to the reduced Paderborn machinery benchmark, where the looped model still beat both LLM baselines while retaining a large latency advantage.
     \item The HVAC extension was harder than the main benchmark: the adaptive model captured warning and critical states well, but it still failed to recover the small normal subset under the stricter asset-level split.
 \end{itemize}
